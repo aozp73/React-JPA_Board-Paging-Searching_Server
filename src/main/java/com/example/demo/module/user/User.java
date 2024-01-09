@@ -1,6 +1,6 @@
 package com.example.demo.module.user;
 
-import com.example.demo.module.user.enums.userRole;
+import com.example.demo.module.user.enums.UserRole;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,7 +26,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private userRole role;
+    private UserRole role;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
