@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder @NoArgsConstructor @AllArgsConstructor
 @Entity @Table(name = "comment_tb")
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,5 +30,4 @@ public class Comment {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
 }
