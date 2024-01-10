@@ -3,9 +3,7 @@ package com.example.demo.repository;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,9 +30,12 @@ public class UserRepositoryTest {
         // rollBack_AutoIncrement
         em.getEntityManager().createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
 
-        // setUp
-        setUpWithSave("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        setUpWithSave("def@naver.com", "def", "5678", UserRole.ADMIN);
+        /**
+         * [초기 데이터 및 Save]
+         * - User Entity 2건
+         */
+        setUp_user("abc@naver.com", "abc", "1234", UserRole.COMMON);
+        setUp_user("def@naver.com", "def", "5678", UserRole.ADMIN);
 
         em.flush();
         em.clear();
@@ -96,6 +96,7 @@ public class UserRepositoryTest {
 
         user.ifPresent(val -> {
             val.setUsername("update");
+
             em.persist(val);
             em.flush();
             em.clear();
@@ -124,7 +125,7 @@ public class UserRepositoryTest {
         assertFalse(deletedUser.isPresent());
     }
 
-    private void setUpWithSave(String email, String username, String password, UserRole role) {
+    private void setUp_user(String email, String username, String password, UserRole role) {
         User user = User.builder()
                 .email(email)
                 .username(username)
