@@ -22,23 +22,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user")
-    public ResponseEntity<?> join(@RequestBody() @Valid Join_InDTO joinInDTO, BindingResult bindingResult) {
+    public ResponseEntity<?> join(@RequestBody() @Valid Join_InDTO joinInDTO) {
         log.debug("회원가입 - POST, Controller)");
-
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            bindingResult.getAllErrors().forEach(error -> {
-                String fieldName = ((FieldError) error).getField();
-                String errorMessage = error.getDefaultMessage();
-                errors.put(fieldName, errorMessage);
-            });
-
-            return ResponseEntity.badRequest().body(
-                    new ResponseDTO<>().fail(HttpStatus.BAD_REQUEST, "입력 값 확인", errors)
-            );
-        }
-
         userService.save(joinInDTO);
+
         return ResponseEntity.ok().body(new ResponseDTO<>());
     }
 }
