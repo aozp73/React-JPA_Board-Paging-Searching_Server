@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.demo.domain.user;
 
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DataJpaTest
-public class UserRepositoryTest {
+public class UserRepositoryEntityTest {
 
     @Autowired
     private UserRepository userRepository;

@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.demo.domain.board;
 
 import com.example.demo.module.board.Board;
 import com.example.demo.module.board.BoardRepository;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DataJpaTest
-public class BoardRepositoryTest {
+public class BoardRepositoryEntityTest {
 
     @Autowired
     private BoardRepository boardRepository;

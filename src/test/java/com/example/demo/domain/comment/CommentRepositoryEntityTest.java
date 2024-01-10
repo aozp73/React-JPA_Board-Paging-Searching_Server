@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.demo.domain.comment;
 
 import com.example.demo.module.board.Board;
 import com.example.demo.module.comment.Comment;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DataJpaTest
-public class CommentRepositoryTest {
+public class CommentRepositoryEntityTest {
 
     @Autowired
     private CommentRepository commentRepository;

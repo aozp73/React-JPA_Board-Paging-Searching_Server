@@ -1,6 +1,5 @@
 package com.example.demo.module.user;
 
-import com.example.demo.exception.statuscode.CustomException;
 import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.user.in_dto.Join_InDTO;
