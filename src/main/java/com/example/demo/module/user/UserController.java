@@ -4,6 +4,7 @@ import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +23,13 @@ public class UserController {
         userService.save(joinInDTO);
 
         return ResponseEntity.ok().body(new ResponseDTO<>());
+    }
+
+    @ResponseBody
+    @GetMapping("/emailCheck")
+    public ResponseEntity<?> emailCheck(@RequestParam String email) {
+        log.debug("POST - 이메일 체크");
+        boolean isValid = userService.emailCheck(email);
+        return new ResponseEntity<>(isValid, HttpStatus.OK);
     }
 }

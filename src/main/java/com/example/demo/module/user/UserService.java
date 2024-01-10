@@ -30,4 +30,10 @@ public class UserService {
             throw new Exception500("회원가입 실패");
         }
     }
+
+    @Transactional(readOnly = true)
+    public Boolean emailCheck(String email) {
+
+        return userRepository.findByEmail(email).isEmpty();
+    }
 }
