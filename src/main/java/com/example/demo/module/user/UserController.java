@@ -30,6 +30,7 @@ public class UserController {
     public ResponseEntity<?> emailCheck(@RequestParam String email) {
         log.debug("POST - 이메일 체크");
         boolean isValid = userService.emailCheck(email);
-        return new ResponseEntity<>(isValid, HttpStatus.OK);
+
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(isValid));
     }
 }

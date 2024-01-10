@@ -17,9 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.awt.print.Book;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -147,5 +149,30 @@ public class UserControllerJoinTest {
                 .andDo(MockMvcResultHandlers.print());
 
         verify(userService, never()).save(any(Join_InDTO.class));
+    }
+
+    @Test
+    @DisplayName("이메일 체크")
+    public void emailCheck() throws Exception {
+        /**
+         * Repository - findByEmail() 테스트 (진행 o)
+         * Service - findByEmail() 단순 호출 (진행 x)
+         */
+
+        // given
+        String email = "abc@naver.com";
+        when(userService.emailCheck(email)).thenReturn(true);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/api/emailCheck?email=" + email)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.msg").value("성공"))
+                .andExpect(jsonPath("$.data").value(true))
+                .andDo(MockMvcResultHandlers.print());
     }
 }
