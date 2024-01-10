@@ -35,7 +35,7 @@ public class UserControllerJoinTest {
 
     @Test
     @DisplayName("회원가입 성공")
-    public void joinTest() throws Exception {
+    public void joinTest_Success() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("test@test.com")
