@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DataJpaTest
@@ -30,80 +29,42 @@ public class UserRepositoryTest {
     private TestEntityManager em;
 
     @BeforeEach
-    public void rollBack_AutoIncrement() {
-
+    public void init() {
+        // rollBack_AutoIncrement
         em.getEntityManager().createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
-    }
 
+        // setUp
+        setUpWithSave("abc@naver.com", "abc", "1234", UserRole.COMMON);
+        setUpWithSave("def@naver.com", "def", "5678", UserRole.ADMIN);
+
+        em.flush();
+        em.clear();
+    }
 
     @Test
     void findById() {
         // given
         Long userId = 1L;
-        setUp("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        em.flush();
-        em.clear();
 
         // when
         Optional<User> user = userRepository.findById(userId);
 
         // then
-        assertThrows(NoSuchElementException.class, () -> userRepository.findById(2L).get());
-        assertThrows(NoSuchElementException.class, () -> userRepository.findById(3L).get());
+        assertTrue(user.isPresent());
 
-        User foundUser = user.get();
-        assertEquals(foundUser.getEmail(), "abc@naver.com");
-        assertEquals(foundUser.getUsername(), "abc");
-        assertEquals(foundUser.getPassword(), "1234");
-        assertEquals(foundUser.getRole(), UserRole.COMMON);
-    }
+        user.ifPresent(foundUser -> {
+            assertEquals(foundUser.getEmail(), "abc@naver.com");
+            assertEquals(foundUser.getUsername(), "abc");
+            assertEquals(foundUser.getPassword(), "1234");
+            assertEquals(foundUser.getRole(), UserRole.COMMON);
+        });
 
-    @Test
-    void update() {
-        // given
-        Long userId = 1L;
-        setUp("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        em.flush();
-        em.clear();
-
-        // when
-        Optional<User> user = userRepository.findById(userId);
-        user.ifPresent(val -> val.setUsername("update"));
-        em.flush();
-        em.clear();
-
-        Optional<User> updateUser = userRepository.findById(1L);
-
-        // then
-        assertEquals(updateUser.get().getUsername(), "update");
-    }
-
-    @Test
-    void delete() {
-        // given
-        Long userId = 1L;
-        setUp("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        em.flush();
-        em.clear();
-
-        // when
-        userRepository.deleteById(userId);
-        em.flush();
-        em.clear();
-
-        Optional<User> updateUser = userRepository.findById(1L);
-
-        // then
-        assertThrows(NoSuchElementException.class, () -> updateUser.get());
+        assertFalse(userRepository.findById(3L).isPresent());
     }
 
     @Test
     void findAll() {
         // given
-        setUp("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        setUp("def@naver.com", "def", "5678", UserRole.ADMIN);
-        em.flush();
-        em.clear();
 
         // when
         List<User> users = userRepository.findAll();
@@ -124,7 +85,46 @@ public class UserRepositoryTest {
         assertEquals(foundUser2.getRole(), UserRole.ADMIN);
     }
 
-    private void setUp(String email, String username, String password, UserRole role) {
+    @Test
+    void update() {
+        // given
+        Long userId = 1L;
+
+        // when
+        Optional<User> user = userRepository.findById(userId);
+        assertTrue(user.isPresent());
+
+        user.ifPresent(val -> {
+            val.setUsername("update");
+            em.persist(val);
+            em.flush();
+            em.clear();
+        });
+
+        // then
+        Optional<User> updatedUser = userRepository.findById(userId);
+        assertTrue(updatedUser.isPresent());
+
+        updatedUser.ifPresent(updated -> assertEquals(updated.getUsername(), "update"));
+    }
+
+    @Test
+    void delete() {
+        // given
+        Long userId = 1L;
+
+        // when
+        userRepository.deleteById(userId);
+        em.flush();
+        em.clear();
+
+        Optional<User> deletedUser = userRepository.findById(userId);
+
+        // then
+        assertFalse(deletedUser.isPresent());
+    }
+
+    private void setUpWithSave(String email, String username, String password, UserRole role) {
         User user = User.builder()
                 .email(email)
                 .username(username)
