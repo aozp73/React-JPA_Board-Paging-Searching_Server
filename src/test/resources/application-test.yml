@@ -23,3 +23,8 @@ spring:
 logging:
   level: # TRACE > DEBUG > INFO > WARN > ERROR
     com.example.demo.module: debug
+
+my:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    refresh-key: ${JWT_REFRESH_KEY}
