@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DataJpaTest
-public class UserRepositoryEntityTest {
+public class UserEntityRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;

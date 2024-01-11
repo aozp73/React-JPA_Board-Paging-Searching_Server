@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.awt.print.Book;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(MySecurityConfig.class) // 추가 하지 않을 경우, 기본 Security 설정 사용
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(UserController.class)
-public class UserControllerJoinTest {
+public class UserJoinControllerTest {
 
     @Autowired private MockMvc mockMvc;
 

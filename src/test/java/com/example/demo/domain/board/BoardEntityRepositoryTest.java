@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DataJpaTest
-public class BoardRepositoryEntityTest {
+public class BoardEntityRepositoryTest {
 
     @Autowired
     private BoardRepository boardRepository;
