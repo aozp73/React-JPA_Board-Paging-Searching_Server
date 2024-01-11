@@ -2,6 +2,8 @@ package com.example.demo.module.user.in_dto;
 
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
+import com.example.demo.module.user.valid.join_InDTO.ValidPassword;
+import com.example.demo.module.user.valid.join_InDTO.ValidUsername;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -15,17 +17,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Join_InDTO {
+    /**
+     * [@Validxxx 및 ConstraintValidator 사용]
+     * - 공백 요청 시, valid message 순서 제어
+     */
+
     @NotBlank(message = "이메일을 입력해주세요")
     private String email; // 로그인
 
-    @NotBlank(message = "패스워드를 입력해주세요")
-    @Size(min = 6, max = 20, message = "6글자 이상 20자 이내로 입력해주세요")
+    @ValidPassword
     private String password;
     @NotBlank(message = "패스워드 확인을 입력해주세요")
     private String passwordConfirmation;
 
-    @NotBlank(message = "아이디를 입력해주세요")
-    @Size(max = 6, message = "6글자 이내로 입력해주세요")
+    @ValidUsername
     private String username;
 
     public User toEntity(BCryptPasswordEncoder passwordEncoder) {

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -25,9 +24,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -171,6 +169,54 @@ public class UserJoinIntegrationTest {
                 .andExpect(jsonPath("$.data.passwordConfirmation").value("패스워드 확인을 입력해주세요"))
                 .andExpect(jsonPath("$.data.username").value("아이디를 입력해주세요"))
                 .andDo(MockMvcResultHandlers.print());
+    }
 
+    @Test
+    @DisplayName("이메일 체크 통합 테스트 - 성공")
+    public void emailCheck_success() throws Exception {
+        // given
+        String email = "abc@test.com";
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/api/emailCheck?email=" + email)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.msg").value("성공"))
+                .andExpect(jsonPath("$.data").value(true))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("이메일 체크 통합 테스트 - 실패")
+    public void emailCheck_fail() throws Exception {
+        // given
+        User user = User.builder()
+                .email("abc@test.com")
+                .username("123")
+                .password("1234")
+                .role(UserRole.COMMON)
+                .createdAt(LocalDateTime.now())
+                .build();
+        em.merge(user);
+        em.flush();
+        em.clear();
+
+        String email = "abc@test.com";
+
+        // when
+        ResultActions resultActions = mockMvc.perform(get("/api/emailCheck?email=" + email)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.msg").value("성공"))
+                .andExpect(jsonPath("$.data").value(false))
+                .andDo(MockMvcResultHandlers.print());
     }
 }
