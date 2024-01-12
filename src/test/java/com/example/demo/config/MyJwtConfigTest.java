@@ -18,15 +18,15 @@ public class MyJwtConfigTest {
     @Autowired
     MyJwtSource myJwtSource;
 
-    @Value("${my.jwt.secret-key}")
-    private String secretKey;
+    @Value("${my.jwt.access-key}")
+    private String accessKey;
 
     @Value("${my.jwt.refresh-key}")
     private String refreshKey;
 
     @Test
     public void jwtEnvBeanTest() {
-        assertEquals(secretKey, myJwtSource.getSecretKey());
+        assertEquals(accessKey, myJwtSource.getAccessKey());
         assertEquals(refreshKey, myJwtSource.getRefreshKey());
     }
 }

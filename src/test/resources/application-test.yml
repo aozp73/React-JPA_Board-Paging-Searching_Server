@@ -26,5 +26,5 @@ logging:
 
 my:
   jwt:
-    secret-key: ${JWT_SECRET_KEY}
+    access-key: ${JWT_ACCESS_KEY}
     refresh-key: ${JWT_REFRESH_KEY}

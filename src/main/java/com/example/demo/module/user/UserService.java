@@ -5,13 +5,12 @@ import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
 import com.example.demo.module.user.in_dto.Login_OutDTO;
+import com.example.demo.util.jwt.MyJwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor @Slf4j
@@ -19,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MyJwtProvider myJwtProvider;
 
     @Transactional
     public void save(Join_InDTO joinInDTO) {
@@ -54,6 +54,10 @@ public class UserService {
         if (!matches) {
             throw new Exception400("비밀번호를 다시 확인해주세요.");
         };
+
+        String accessToken = myJwtProvider.createAccessToken(userEntity);
+        String refreshToken = myJwtProvider.createRefreshToken(userEntity);
+
 
         return null;
     }

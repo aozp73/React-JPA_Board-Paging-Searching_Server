@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("my.jwt")
 public class MyJwtProperties {
 
-    private String secretKey;
+    private String accessKey;
     private String refreshKey;
 
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MyJwtSource {
 
-    private String secretKey;
+    private String accessKey;
     private String refreshKey;
 
 }

@@ -19,7 +19,7 @@ public class MyJwtConfig {
     public MyJwtSource myJwtSource() {
 
         return MyJwtSource.builder()
-                .secretKey(properties.getSecretKey())
+                .accessKey(properties.getAccessKey())
                 .refreshKey(properties.getRefreshKey())
                 .build();
     }
