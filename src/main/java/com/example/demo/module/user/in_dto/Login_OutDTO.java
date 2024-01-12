@@ -12,4 +12,5 @@ public class Login_OutDTO {
 
     private Long userId;
     private String username;
+    private String email;
 }

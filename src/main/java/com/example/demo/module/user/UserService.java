@@ -2,6 +2,8 @@ package com.example.demo.module.user;
 
 import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.exception.statuscode.Exception500;
+import com.example.demo.module.refreshtoken.RefreshToken;
+import com.example.demo.module.refreshtoken.RefreshTokenRepository;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
 import com.example.demo.module.user.in_dto.Login_OutDTO;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+
     private final BCryptPasswordEncoder passwordEncoder;
     private final MyJwtProvider myJwtProvider;
 
@@ -46,19 +50,29 @@ public class UserService {
     public Login_OutDTO login(Login_InDTO loginInDTO) {
         log.debug(("로그인 요청 - POST, Service"));
 
+        // 검증 - 로그인 요청 값
         User userEntity = userRepository.findByEmail(loginInDTO.getEmail()).orElseThrow(
                 () -> new Exception400("이메일을 다시 확인해주세요.")
         );
-
         boolean matches = passwordEncoder.matches(loginInDTO.getPassword(), userEntity.getPassword());
         if (!matches) {
             throw new Exception400("비밀번호를 다시 확인해주세요.");
         };
 
+        // 토큰 생성 - access, refresh 토큰
         String accessToken = myJwtProvider.createAccessToken(userEntity);
         String refreshToken = myJwtProvider.createRefreshToken(userEntity);
 
+        // Redis 저장 - refresh 토큰
+        refreshTokenRepository.save(new RefreshToken(userEntity.getId(), refreshToken));
 
-        return null;
+        // DTO 응답
+        return Login_OutDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userId(userEntity.getId())
+                .email(userEntity.getEmail())
+                .username(userEntity.getUsername())
+                .build();
     }
 }

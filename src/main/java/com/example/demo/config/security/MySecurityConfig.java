@@ -38,10 +38,9 @@ public class MySecurityConfig {
                 .anyRequest().permitAll()
 
                 .and()
-                .formLogin()
-                .loginPage("/loginForm")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/")
+                .formLogin().disable()
+                .csrf().disable()
+                .cors()
 
                 .and()
                 .logout()

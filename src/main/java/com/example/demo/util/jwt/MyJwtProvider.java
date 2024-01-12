@@ -33,6 +33,7 @@ public class MyJwtProvider {
                 userEntity.getRole().toString(), ACCESS_TOKEN_EXPIRE_COUNT, accessSecret);
     }
     public String createRefreshToken(User userEntity) {
+        // 현재 아키텍쳐에선 사용자 정보 활용 x
         return createToken(userEntity.getId(), userEntity.getEmail(), userEntity.getUsername(),
                 userEntity.getRole().toString(), REFRESH_TOKEN_EXPIRE_COUNT, refreshSecret);
     }

@@ -4,6 +4,7 @@ import com.example.demo.config.envBeanConfig.jwt.MyJwtSource;
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
+import com.example.demo.module.user.in_dto.Login_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +38,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid Login_InDTO loginInDTO) {
         log.debug(("로그인 요청 - POST, Controller"));
+        Login_OutDTO loginOutDTO = userService.login(loginInDTO);
 
-        userService.login(loginInDTO);
-
-        return null;
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(loginOutDTO));
     }
 }
