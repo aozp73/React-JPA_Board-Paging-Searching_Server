@@ -59,7 +59,7 @@ public class UserJoinIntegrationTest {
         String content = new ObjectMapper().writeValueAsString(joinInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/user")
+        ResultActions resultActions = mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -95,7 +95,7 @@ public class UserJoinIntegrationTest {
         String content = new ObjectMapper().writeValueAsString(joinInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/user")
+        ResultActions resultActions = mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -124,7 +124,7 @@ public class UserJoinIntegrationTest {
         String content = new ObjectMapper().writeValueAsString(joinInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/user")
+        ResultActions resultActions = mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -154,7 +154,7 @@ public class UserJoinIntegrationTest {
         String content = new ObjectMapper().writeValueAsString(joinInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/user")
+        ResultActions resultActions = mockMvc.perform(post("/api/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));

@@ -3,6 +3,7 @@ package com.example.demo.module.user;
 import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.user.in_dto.Join_InDTO;
+import com.example.demo.module.user.in_dto.Login_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,7 +19,7 @@ public class UserService {
 
     @Transactional
     public void save(Join_InDTO joinInDTO) {
-        log.debug("회원가입 - POST, Service");
+        log.debug("회원가입 요청- POST, Service");
 
         if(userRepository.findByEmail(joinInDTO.getEmail()).isPresent()) {
             throw new Exception400("동일 이메일 존재");
@@ -33,7 +34,15 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Boolean emailCheck(String email) {
+        log.debug("회원가입 입력 중 이메일 체크 - POST, Service");
 
         return userRepository.findByEmail(email).isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public Login_OutDTO login() {
+        log.debug(("로그인 요청 - POST, Service"));
+
+        return null;
     }
 }
