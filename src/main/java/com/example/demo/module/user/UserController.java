@@ -38,6 +38,8 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody @Valid Login_InDTO loginInDTO) {
         log.debug(("로그인 요청 - POST, Controller"));
 
+        userService.login(loginInDTO);
+
         return null;
     }
 }
