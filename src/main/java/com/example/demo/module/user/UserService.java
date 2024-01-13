@@ -1,6 +1,7 @@
 package com.example.demo.module.user;
 
 import com.example.demo.exception.statuscode.Exception400;
+import com.example.demo.exception.statuscode.Exception401;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
@@ -10,9 +11,12 @@ import com.example.demo.module.user.in_dto.Login_OutDTO;
 import com.example.demo.util.jwt.MyJwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor @Slf4j
@@ -21,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private final StringRedisTemplate stringRedisTemplate;
     private final BCryptPasswordEncoder passwordEncoder;
     private final MyJwtProvider myJwtProvider;
 
@@ -65,6 +70,7 @@ public class UserService {
 
         // Redis 저장 - refresh 토큰
         refreshTokenRepository.save(new RefreshToken(userEntity.getId(), refreshToken));
+        stringRedisTemplate.opsForValue().set("refreshTokenIndex:" + refreshToken, userEntity.getId().toString());
 
         // DTO 응답
         return Login_OutDTO.builder()
@@ -74,5 +80,22 @@ public class UserService {
                 .email(userEntity.getEmail())
                 .username(userEntity.getUsername())
                 .build();
+    }
+
+    @Transactional
+    public void deleteRefreshToken(String refreshToken, Long principalUserId) {
+        log.debug(("로그아웃 요청 - DELETE, Service"));
+
+        String userId = stringRedisTemplate.opsForValue().get("refreshTokenIndex:" + refreshToken);
+
+//        if (userId != null && !userId.equals(principalUserId.toString())) {
+//            throw new Exception401("잘못된 접근입니다.");
+//        }
+
+        if (userId != null) {
+            refreshTokenRepository.deleteById(Long.parseLong(userId));
+            stringRedisTemplate.delete("refreshTokenIndex:" + refreshToken);
+        }
+
     }
 }
