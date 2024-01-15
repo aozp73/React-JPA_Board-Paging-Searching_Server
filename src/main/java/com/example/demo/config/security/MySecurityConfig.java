@@ -1,5 +1,8 @@
 package com.example.demo.config.security;
 
+import com.example.demo.config.security.filter.MyJwtAuthenticationFilter;
+import com.example.demo.config.security.jwt.MyJwtProvider;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,10 +12,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 public class MySecurityConfig {
+
+    private final MyJwtProvider myJwtProvider;
+    private final MyAuthenticationManagerConfig myAuthenticationManagerConfig;
 
     @Bean
     public BCryptPasswordEncoder encode() {
@@ -20,10 +28,11 @@ public class MySecurityConfig {
     }
 
     @Bean
+    public MyJwtAuthenticationFilter myJwtAuthenticationFilter() throws Exception {
+        return new MyJwtAuthenticationFilter(myJwtProvider);
+    }
+    @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.headers().frameOptions().disable(); // h2-console 개발
-        http.cors().configurationSource(configurationSource());
 
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
             /**
@@ -33,20 +42,26 @@ public class MySecurityConfig {
             response.sendRedirect("/loginForm");
         });
 
+        http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
+            /**
+             *  == header 전송 / refresh token / 응답 DTO 추가 ===== ☆★☆★☆
+             */
+        });
+
         http.authorizeRequests()
-                .antMatchers("/auth/**").authenticated()
+                .antMatchers("/api/auth/**").authenticated()
                 .anyRequest().permitAll()
+
+                .and()
+                .apply(myAuthenticationManagerConfig)
 
                 .and()
                 .formLogin().disable()
                 .csrf().disable()
-                .cors()
+                .cors().configurationSource(configurationSource())
 
                 .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/loginForm")
-                .invalidateHttpSession(true);
+                .headers().frameOptions().disable();
 
         return http.build();
     }

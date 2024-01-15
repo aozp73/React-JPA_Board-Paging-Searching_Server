@@ -1,22 +1,19 @@
 package com.example.demo.module.user;
 
 import com.example.demo.exception.statuscode.Exception400;
-import com.example.demo.exception.statuscode.Exception401;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
 import com.example.demo.module.user.in_dto.Login_OutDTO;
-import com.example.demo.util.jwt.MyJwtProvider;
+import com.example.demo.config.security.jwt.MyJwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor @Slf4j

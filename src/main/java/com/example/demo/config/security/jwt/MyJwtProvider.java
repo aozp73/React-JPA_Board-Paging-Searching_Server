@@ -1,8 +1,10 @@
-package com.example.demo.util.jwt;
+package com.example.demo.config.security.jwt;
 
 import com.example.demo.config.envBeanConfig.jwt.MyJwtSource;
 import com.example.demo.module.user.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -53,35 +55,19 @@ public class MyJwtProvider {
                 .compact();
     }
 
+    /**
+     * JWT 토큰 검증
+     */
+    public Jws<Claims> verify(String jwt) {
+        Key key = getSigningKey(accessSecret);
+
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(jwt);
+    }
+
     public static Key getSigningKey(byte[] secretKey) {
         return Keys.hmacShaKeyFor(secretKey);
-    }
-
-
-    /**
-     * 추출 - 토큰 페이로드
-     */
-    public Long getUserIdFromToken(String token) {
-        String[] tokenArr = token.split(" ");
-        token = tokenArr[1];
-        Claims claims = parseToken(token, accessSecret);
-        return Long.valueOf((Integer)claims.get("userId"));
-    }
-
-    public Claims parseAccessToken(String accessToken) {
-        return parseToken(accessToken, accessSecret);
-    }
-
-    public Claims parseRefreshToken(String refreshToken) {
-        return parseToken(refreshToken, refreshSecret);
-    }
-
-
-    public Claims parseToken(String token, byte[] secretKey) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey(secretKey))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
     }
 }
