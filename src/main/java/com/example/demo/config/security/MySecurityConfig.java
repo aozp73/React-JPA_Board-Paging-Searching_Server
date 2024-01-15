@@ -2,6 +2,7 @@ package com.example.demo.config.security;
 
 import com.example.demo.config.security.filter.MyJwtAuthenticationFilter;
 import com.example.demo.config.security.jwt.MyJwtProvider;
+import com.example.demo.util.MySecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,49 +31,45 @@ public class MySecurityConfig {
     }
 
     @Bean
-    public MyJwtAuthenticationFilter myJwtAuthenticationFilter() throws Exception {
+    public MyJwtAuthenticationFilter myJwtAuthenticationFilter() {
         return new MyJwtAuthenticationFilter(myJwtProvider);
     }
+    
     @Bean
     SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
         http.exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
-            /**
-             *  == header 전송 / refresh token / 응답 DTO 추가 ===== ☆★☆★☆
-             */
-            log.error("에러 : 인증 실패 : " + authException.getMessage());
-            response.sendRedirect("/loginForm");
+            MySecurityUtil.handleExceptionResponse(response, "Authentication Fail", HttpServletResponse.SC_BAD_REQUEST);
         });
 
         http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
-            /**
-             *  == header 전송 / refresh token / 응답 DTO 추가 ===== ☆★☆★☆
-             */
+            MySecurityUtil.handleExceptionResponse(response, "Authorization Fail", HttpServletResponse.SC_BAD_REQUEST);
         });
 
-        http.authorizeRequests()
+        http.cors().configurationSource(configurationSource())
+
+                .and()
+                .csrf().disable()
+                .formLogin().disable()
+                .httpBasic().disable()
+//                .headers().frameOptions().disable() // h2 개발용도
+
+                .authorizeRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/api/auth/**").authenticated()
                 .anyRequest().permitAll()
 
                 .and()
-                .apply(myAuthenticationManagerConfig)
-
-                .and()
-                .formLogin().disable()
-                .csrf().disable()
-                .cors().configurationSource(configurationSource())
-
-                .and()
-                .headers().frameOptions().disable();
+                .apply(myAuthenticationManagerConfig);
 
         return http.build();
     }
 
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
-        configuration.addAllowedOriginPattern("*");
         configuration.setAllowCredentials(true);
         configuration.addExposedHeader("Authorization");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

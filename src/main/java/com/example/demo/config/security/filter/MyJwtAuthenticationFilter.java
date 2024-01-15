@@ -2,17 +2,12 @@ package com.example.demo.config.security.filter;
 
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.config.security.principal.MyUserDetails;
-import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.demo.util.MySecurityUtil;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +24,6 @@ import java.io.IOException;
 public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final MyJwtProvider myJwtProvider;
-    private final ObjectMapper om = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -43,16 +37,16 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         catch (NullPointerException | IllegalStateException e) {
-            handleExceptionResponse(response, "Token Exception: NOT_FOUND_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
+            MySecurityUtil.handleExceptionResponse(response, "Token Exception: NOT_FOUND_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
 
         } catch (SecurityException | MalformedJwtException e) {
-            handleExceptionResponse(response, "Token Exception: INVALID_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
+            MySecurityUtil.handleExceptionResponse(response, "Token Exception: INVALID_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
 
         } catch (ExpiredJwtException e) {
-            handleExceptionResponse(response, "Token Exception: EXPIRED_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
+            MySecurityUtil.handleExceptionResponse(response, "Token Exception: EXPIRED_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
 
         } catch (UnsupportedJwtException e) {
-            handleExceptionResponse(response, "Token Exception: UNSUPPORTED_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
+            MySecurityUtil.handleExceptionResponse(response, "Token Exception: UNSUPPORTED_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
 
         } catch (Exception e) {
             log.error("====================================================");
@@ -61,7 +55,7 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
             log.error("Exception Message : {}", e.getMessage());
             log.error("====================================================");
 
-            handleExceptionResponse(response, "Token Exception: JWT ETCException", HttpServletResponse.SC_BAD_REQUEST);
+            MySecurityUtil.handleExceptionResponse(response, "Token Exception: JWT ETCException", HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
@@ -89,17 +83,6 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
             return arr[1];
         }
         return null;
-    }
-
-    private void handleExceptionResponse(HttpServletResponse response, String errorMessage, int statusCode) throws IOException {
-        log.error(errorMessage);
-
-        ResponseDTO<?> errorResponse = new ResponseDTO<>().fail(HttpStatus.valueOf(statusCode), errorMessage, null);
-        response.setStatus(statusCode);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        response.getWriter().write(om.writeValueAsString(errorResponse));
     }
 }
 
