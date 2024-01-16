@@ -41,14 +41,6 @@ public class UserLoginServiceTest {
     private MyJwtProvider myJwtProvider;
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
-    @Mock
-    private StringRedisTemplate stringRedisTemplate;
-    @Mock
-    private ValueOperations<String, String> valueOperations;
-
-    @BeforeEach
-    void setUp() {
-    }
 
     @Test
     @DisplayName("로그인 성공")
@@ -59,9 +51,6 @@ public class UserLoginServiceTest {
         mockUser.setId(1L);
         mockUser.setEmail("test@test.com");
         mockUser.setPassword(passwordEncoder.encode("123456"));
-
-        when(stringRedisTemplate.opsForValue()).thenReturn(valueOperations);
-        doNothing().when(valueOperations).set(anyString(), anyString());
 
         when(userRepository.findByEmail(loginInDTO.getEmail())).thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches(loginInDTO.getPassword(), mockUser.getPassword())).thenReturn(true);

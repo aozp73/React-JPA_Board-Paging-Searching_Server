@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor @Slf4j
 public class UserService {
@@ -49,7 +51,7 @@ public class UserService {
         return userRepository.findByEmail(email).isEmpty();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Login_OutDTO login(Login_InDTO loginInDTO) {
         log.debug(("로그인 요청 - POST, Service"));
 
@@ -57,6 +59,7 @@ public class UserService {
         User userEntity = userRepository.findByEmail(loginInDTO.getEmail()).orElseThrow(
                 () -> new Exception400("이메일을 다시 확인해주세요.")
         );
+
         boolean matches = passwordEncoder.matches(loginInDTO.getPassword(), userEntity.getPassword());
         if (!matches) {
             throw new Exception400("비밀번호를 다시 확인해주세요.");
@@ -68,7 +71,6 @@ public class UserService {
 
         // Redis 저장 - refresh 토큰
         refreshTokenRepository.save(new RefreshToken(userEntity.getId(), refreshToken));
-        stringRedisTemplate.opsForValue().set("refreshTokenIndex:" + refreshToken, userEntity.getId().toString());
 
         // DTO 응답
         return Login_OutDTO.fromTokensAndUserEntity(accessToken, refreshToken, userEntity);
@@ -78,16 +80,14 @@ public class UserService {
     public void deleteRefreshToken(String refreshToken, Long principalUserId) {
         log.debug(("로그아웃 요청 - DELETE, Service"));
 
-        String userId = stringRedisTemplate.opsForValue().get("refreshTokenIndex:" + refreshToken);
+        Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByRefreshToken(refreshToken);
 
-        if (userId != null && !userId.equals(principalUserId.toString())) {
+        if (refreshTokenOpt.isEmpty() || !refreshTokenOpt.get().getUserId().equals(principalUserId)) {
             throw new Exception401("잘못된 접근입니다.");
         }
 
-        if (userId != null) {
-            refreshTokenRepository.deleteById(Long.parseLong(userId));
-            stringRedisTemplate.delete("refreshTokenIndex:" + refreshToken);
-        }
+        // 리프레시 토큰 삭제
+        refreshTokenRepository.delete(refreshTokenOpt.get());
     }
 
     @Transactional(readOnly = true)

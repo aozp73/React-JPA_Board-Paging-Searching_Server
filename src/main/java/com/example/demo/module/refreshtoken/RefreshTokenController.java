@@ -29,10 +29,11 @@ public class RefreshTokenController {
         log.debug(("accessToken 재발급 - POST, Controller"));
 
         // Redis refreshToken 검증
-        String userId = refreshTokenService.findRefreshToken(refreshTokenInDTO.getRefreshToken());
+        RefreshToken refreshToken = refreshTokenService.findRefreshToken(refreshTokenInDTO.getRefreshToken());
+        Long userId = refreshToken.getUserId();
 
         // Redis userId 검증
-        User userEntity = userService.findUser(Long.valueOf(userId));
+        User userEntity = userService.findUser(userId);
 
         // accessToken 생성
         String accessToken = myJwtProvider.createAccessToken(userEntity);
