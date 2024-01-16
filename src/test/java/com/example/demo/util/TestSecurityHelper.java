@@ -16,4 +16,15 @@ public class TestSecurityHelper {
 
         return jwtProvider.createAccessToken(mockUser);
     }
+
+    public static String createRefreshToken(MyJwtProvider jwtProvider, Long userId, String email, String username) {
+        User mockUser = User.builder()
+                .id(userId)
+                .email(email)
+                .username(username)
+                .role(UserRole.COMMON)
+                .build();
+
+        return jwtProvider.createRefreshToken(mockUser);
+    }
 }

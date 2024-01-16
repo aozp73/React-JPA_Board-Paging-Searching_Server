@@ -1,12 +1,13 @@
-package com.example.demo.integration.user;
+package com.example.demo.integration.refreshToken;
 
+import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
+import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
-import com.example.demo.module.user.in_dto.Login_InDTO;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.example.demo.util.TestSecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import redis.embedded.RedisServer;
 
 import javax.persistence.EntityManager;
-
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,13 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class UserLoginIntegrationTest {
+public class RequestRefreshTokenIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
 
-    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private UserRepository userRepository;
     @Autowired private RefreshTokenRepository refreshTokenRepository;
+    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired private MyJwtProvider myJwtProvider;
 
     private static RedisServer redisServer;
 
@@ -55,9 +54,11 @@ public class UserLoginIntegrationTest {
         /**
          * [초기 데이터 및 Save]
          * - User Entity 1건
+         * - RefreshToken Entity 1건
          */
         String encodePassword = bCryptPasswordEncoder.encode("123456");
-        setUp_user("abc@naver.com", "abc", encodePassword, UserRole.COMMON);
+        setUp_user("test@test.com", "test", encodePassword, UserRole.COMMON);
+        setUp_refreshToken(1L, "mockToken");
 
         em.flush();
         em.clear();
@@ -75,17 +76,14 @@ public class UserLoginIntegrationTest {
     }
 
     @Test
-    @DisplayName("로그인 성공")
-    public void login_SuccessTest() throws Exception {
+    @DisplayName("Refresh Token 요청 성공")
+    public void requestRefresh_SuccessTest() throws Exception {
         // given
-        Login_InDTO loginInDTO = Login_InDTO.builder()
-                .email("abc@naver.com")
-                .password("123456")
-                .build();
-        String content = new ObjectMapper().writeValueAsString(loginInDTO);
+        RefreshToken_inDTO refreshTokenInDTO = new RefreshToken_inDTO("mockToken");
+        String content = new ObjectMapper().writeValueAsString(refreshTokenInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/login")
+        ResultActions resultActions = mockMvc.perform(post("/api/refreshToken")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -95,21 +93,31 @@ public class UserLoginIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
-                .andExpect(jsonPath("$.data.username").value("abc"))
-                .andExpect(jsonPath("$.data.email").value("abc@naver.com"))
+                .andExpect(jsonPath("$.data.userId").value(1L))
+                .andExpect(jsonPath("$.data.username").value("test"))
+                .andExpect(jsonPath("$.data.email").value("test@test.com"))
                 .andDo(MockMvcResultHandlers.print());
-
-            // redis 저장 Refresh 토큰 검증
-            String jsonResponse = resultActions.andReturn().getResponse().getContentAsString();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            String refreshToken = rootNode.path("data").path("refreshToken").asText();
-
-            Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByRefreshToken(refreshToken);
-            assertTrue(refreshTokenOpt.isPresent());
-            assertEquals(refreshToken, refreshTokenOpt.get().getRefreshToken());
     }
 
+    @Test
+    @DisplayName("Refresh Token 요청 실패 - 잘못된 토큰 전송")
+    public void requestRefresh_RefreshTokenValid_FailTest() throws Exception {
+        // given
+        RefreshToken_inDTO refreshTokenInDTO = new RefreshToken_inDTO("wrongToken");
+        String content = new ObjectMapper().writeValueAsString(refreshTokenInDTO);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/api/refreshToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.data").value("잘못된 RefreshToken 전송"))
+                .andDo(MockMvcResultHandlers.print());
+    }
 
     private void setUp_user(String email, String username, String password, UserRole role) {
         User user = User.builder()
@@ -121,5 +129,14 @@ public class UserLoginIntegrationTest {
                 .build();
 
         this.em.persist(user);
+    }
+
+    private void setUp_refreshToken(Long userId, String token) {
+        RefreshToken refreshToken = RefreshToken.builder()
+                .userId(userId)
+                .refreshToken(token)
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
     }
 }

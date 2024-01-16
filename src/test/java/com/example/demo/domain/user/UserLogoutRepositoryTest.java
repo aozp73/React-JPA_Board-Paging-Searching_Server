@@ -20,6 +20,9 @@ public class UserLogoutRepositoryTest {
 
     @BeforeEach
     public void init() {
+        // rollBack_EmbeddedRedis
+        refreshTokenRepository.deleteAll();
+
         /**
          * [초기 데이터 및 Save]
          * - RefreshToken Entity 1건
