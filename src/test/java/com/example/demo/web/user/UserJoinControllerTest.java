@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import({MySecurityConfig.class, MyJwtProvider.class, MyAuthenticationManagerConfig.class}) // 추가 하지 않을 경우, 기본 Security 설정 사용
-@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(UserController.class)
 public class UserJoinControllerTest {
 
@@ -37,7 +35,7 @@ public class UserJoinControllerTest {
 
     @Test
     @DisplayName("회원가입 성공")
-    public void joinTest_Success() throws Exception {
+    public void join_SuccessTest() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("test@test.com")
@@ -65,7 +63,7 @@ public class UserJoinControllerTest {
 
     @Test
     @DisplayName("회원가입 실패 - password 자릿 수")
-    public void joinValidTest_password() throws Exception {
+    public void join_ValidPassword_FailTest() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("test@test.com")
@@ -94,7 +92,7 @@ public class UserJoinControllerTest {
 
     @Test
     @DisplayName("회원가입 실패 - username 자릿 수")
-    public void joinValidTest_username() throws Exception {
+    public void join_ValidUsername_FailTest() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("test@test.com")
@@ -123,7 +121,7 @@ public class UserJoinControllerTest {
 
     @Test
     @DisplayName("회원가입 실패 - username,password 자릿 수")
-    public void joinValidTest_password_username() throws Exception {
+    public void join_ValidPasswordUsername_FailTest() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("test@test.com")
@@ -153,7 +151,7 @@ public class UserJoinControllerTest {
 
     @Test
     @DisplayName("이메일 체크")
-    public void emailCheck() throws Exception {
+    public void emailCheck_SuccessTest() throws Exception {
         /**
          * Repository - findByEmail() 테스트 (진행 o)
          * Service - findByEmail() 단순 호출 (진행 x)
