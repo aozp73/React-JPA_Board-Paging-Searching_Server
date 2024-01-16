@@ -70,13 +70,7 @@ public class UserService {
         stringRedisTemplate.opsForValue().set("refreshTokenIndex:" + refreshToken, userEntity.getId().toString());
 
         // DTO 응답
-        return Login_OutDTO.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .userId(userEntity.getId())
-                .email(userEntity.getEmail())
-                .username(userEntity.getUsername())
-                .build();
+        return Login_OutDTO.fromTokensAndUserEntity(accessToken, refreshToken, userEntity);
     }
 
     @Transactional
@@ -93,6 +87,12 @@ public class UserService {
             refreshTokenRepository.deleteById(Long.parseLong(userId));
             stringRedisTemplate.delete("refreshTokenIndex:" + refreshToken);
         }
+    }
 
+    @Transactional(readOnly = true)
+    public User findUser(Long userId) {
+        log.debug(("accessToken 재발급 - POST, Service (findUser)"));
+
+        return userRepository.findById(userId).orElseThrow(() -> new Exception400("저장된 토큰 정보 오류"));
     }
 }
