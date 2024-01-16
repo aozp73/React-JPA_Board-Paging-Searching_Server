@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
@@ -13,6 +14,6 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 public class RefreshToken_inDTO {
 
-    @NotEmpty
+    @NotBlank
     String refreshToken;
 }

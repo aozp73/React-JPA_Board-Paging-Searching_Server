@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @DeleteMapping("/auth/logout")
-    public ResponseEntity<?> logout(@RequestBody RefreshToken_inDTO refreshTokenInDTO,
+    public ResponseEntity<?> logout(@RequestBody @Valid RefreshToken_inDTO refreshTokenInDTO,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug(("로그아웃 요청 - DELETE, Controller"));
         userService.deleteRefreshToken(refreshTokenInDTO.getRefreshToken(), myUserDetails.getUser().getId());
