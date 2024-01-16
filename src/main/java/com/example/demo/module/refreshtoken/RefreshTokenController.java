@@ -2,14 +2,12 @@ package com.example.demo.module.refreshtoken;
 
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.exception.ResponseDTO;
+import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserService;
 import com.example.demo.module.user.in_dto.Login_OutDTO;
-import com.example.demo.module.user.in_dto.RefreshToken_InDTO;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +25,7 @@ public class RefreshTokenController {
     private final MyJwtProvider myJwtProvider;
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<?> requestRefresh(@RequestBody RefreshToken_InDTO refreshTokenInDTO) {
+    public ResponseEntity<?> requestRefresh(@RequestBody RefreshToken_inDTO refreshTokenInDTO) {
         log.debug(("accessToken 재발급 - POST, Controller"));
 
         // Redis refreshToken 검증

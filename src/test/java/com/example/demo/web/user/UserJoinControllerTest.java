@@ -1,6 +1,8 @@
 package com.example.demo.web.user;
 
+import com.example.demo.config.security.MyAuthenticationManagerConfig;
 import com.example.demo.config.security.MySecurityConfig;
+import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.module.user.UserController;
 import com.example.demo.module.user.UserService;
 import com.example.demo.module.user.in_dto.Join_InDTO;
@@ -24,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import(MySecurityConfig.class) // 추가 하지 않을 경우, 기본 Security 설정 사용
+@Import({MySecurityConfig.class, MyJwtProvider.class, MyAuthenticationManagerConfig.class}) // 추가 하지 않을 경우, 기본 Security 설정 사용
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(UserController.class)
 public class UserJoinControllerTest {

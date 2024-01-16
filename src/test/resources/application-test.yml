@@ -6,6 +6,10 @@ server:
       force: true
 
 spring:
+  redis: # jwt refresh token 저장
+    host: localhost
+    port: 6379
+    
   output:
     ansi:
       enabled: always
