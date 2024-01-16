@@ -2,10 +2,10 @@ package com.example.demo.module.user;
 
 import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.exception.ResponseDTO;
+import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
 import com.example.demo.module.user.in_dto.Login_OutDTO;
-import com.example.demo.module.user.in_dto.RefreshToken_InDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +45,8 @@ public class UserController {
         return ResponseEntity.ok().body(new ResponseDTO<>().data(loginOutDTO));
     }
 
-    @DeleteMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody RefreshToken_InDTO refreshTokenInDTO,
+    @DeleteMapping("/auth/logout")
+    public ResponseEntity<?> logout(@RequestBody RefreshToken_inDTO refreshTokenInDTO,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug(("로그아웃 요청 - DELETE, Controller"));
         userService.deleteRefreshToken(refreshTokenInDTO.getRefreshToken(), myUserDetails.getUser().getId());

@@ -1,6 +1,7 @@
 package com.example.demo.module.user;
 
 import com.example.demo.exception.statuscode.Exception400;
+import com.example.demo.exception.statuscode.Exception401;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
@@ -79,9 +80,9 @@ public class UserService {
 
         String userId = stringRedisTemplate.opsForValue().get("refreshTokenIndex:" + refreshToken);
 
-//        if (userId != null && !userId.equals(principalUserId.toString())) {
-//            throw new Exception401("잘못된 접근입니다.");
-//        }
+        if (userId != null && !userId.equals(principalUserId.toString())) {
+            throw new Exception401("잘못된 접근입니다.");
+        }
 
         if (userId != null) {
             refreshTokenRepository.deleteById(Long.parseLong(userId));
