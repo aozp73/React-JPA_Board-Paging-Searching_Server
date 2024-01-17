@@ -27,7 +27,7 @@ public class Board {
     private String content;
 
     @Column(nullable = false)
-    private int views;
+    private Integer views;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

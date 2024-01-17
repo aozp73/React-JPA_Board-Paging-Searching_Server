@@ -19,7 +19,7 @@ public class BoardController {
     @GetMapping("/board")
     public ResponseEntity<?> list(@ModelAttribute BoardListSearch_InDTO boardListSearchInDTO,
                        @PageableDefault(size = 5) Pageable pageable) {
-        log.debug("GET - 게시글 목록 페이지");
+        log.debug("게시글 목록 - GET, Controller");
 
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findAll(boardListSearchInDTO, pageable)));
     }
