@@ -1,5 +1,6 @@
 package com.example.demo.module.board;
 
+import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.out_dto.BoardListDTO;
 import com.example.demo.module.board.out_dto.BoardList_OutDTO;
@@ -14,12 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final BoardRepository boardRepository;
     private final BoardQueryRepository boardQueryRepository;
 
     @Transactional(readOnly = true)
     public BoardList_OutDTO findAll(BoardListSearch_InDTO boardListSearchInDTO, Pageable pageable) {
-        Page<BoardListDTO> boardListOutDTOS = boardQueryRepository.findAllWithUserForList(boardListSearchInDTO, pageable);
+        Page<BoardListDTO> boardListOutDTOS = null;
+        try {
+            boardListOutDTOS = boardQueryRepository.findAllWithUserForList(boardListSearchInDTO, pageable);
+        } catch(Exception exception) {
+            throw new Exception500("게시글 조회에 실패하였습니다.");
+        }
+
         PageInfoDTO pageInfoDTO = new PageInfoDTO(boardListOutDTOS);
 
         return new BoardList_OutDTO(boardListOutDTOS, pageInfoDTO);

@@ -2,12 +2,8 @@ package com.example.demo.module.board;
 
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
-import com.example.demo.module.board.out_dto.BoardListDTO;
-import com.example.demo.module.board.out_dto.BoardList_OutDTO;
-import com.example.demo.module.board.out_dto.PageInfoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;

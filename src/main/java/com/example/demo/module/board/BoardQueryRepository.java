@@ -50,7 +50,7 @@ public class BoardQueryRepository {
         long total = jpaQuery.fetchCount();
         List<BoardListDTO> content = jpaQuery
                 .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
+                .offset(pageable.getOffset()) // Client가 page param 넘기면, 자동계산 (page * size)
                 .fetch();
 
         return new PageImpl<>(content, pageable, total);
