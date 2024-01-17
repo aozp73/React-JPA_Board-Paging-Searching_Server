@@ -52,11 +52,20 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
             log.error("====================================================");
             log.error("JwtFilter - doFilterInternal() ETCException");
             log.error("token : {}", token);
-            log.error("Exception Message : {}", e.getMessage());
+            log.error("Exception Message : ", e);
             log.error("====================================================");
 
             MySecurityUtil.handleExceptionResponse(response, "Token Exception: JWT ETCException", HttpServletResponse.SC_BAD_REQUEST);
         }
+    }
+
+    private String getToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer")){
+            String[] arr = authorization.split(" ");
+            return arr[1];
+        }
+        return null;
     }
 
     private void setAuthentication(String token) {
@@ -74,15 +83,6 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
                 myUserDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    private String getToken(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer")){
-            String[] arr = authorization.split(" ");
-            return arr[1];
-        }
-        return null;
     }
 }
 

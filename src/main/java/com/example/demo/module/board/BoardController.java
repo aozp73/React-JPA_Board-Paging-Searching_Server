@@ -2,6 +2,7 @@ package com.example.demo.module.board;
 
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
+import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -28,11 +29,10 @@ public class BoardController {
 
     @GetMapping("/board/{boardId}")
     public ResponseEntity<?> detail(@PathVariable Long boardId) {
-        log.debug("GET - 게시글 상세 페이지");
+        log.debug("게시글 상세 페이지 - GET, Controller");
 
         boardService.viewsCount(boardId);
-        boardService.findDetailById(boardId);
 
-        return null;
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findDetailById(boardId)));
     }
 }

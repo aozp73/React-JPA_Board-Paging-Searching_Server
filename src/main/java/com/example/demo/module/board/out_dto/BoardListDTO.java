@@ -12,8 +12,7 @@ public class BoardListDTO {
     private Long boardId;
     private String title;
     private Integer views;
-    private String createdAtFormat;
-
+    private String createdAt;
     private Integer commentCount;
 
     private User user;
