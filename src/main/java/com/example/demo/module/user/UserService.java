@@ -7,7 +7,7 @@ import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
-import com.example.demo.module.user.in_dto.Login_OutDTO;
+import com.example.demo.module.user.out_dto.Login_OutDTO;
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

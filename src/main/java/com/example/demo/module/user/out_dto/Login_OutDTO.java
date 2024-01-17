@@ -1,4 +1,4 @@
-package com.example.demo.module.user.in_dto;
+package com.example.demo.module.user.out_dto;
 
 import com.example.demo.module.user.User;
 import lombok.*;

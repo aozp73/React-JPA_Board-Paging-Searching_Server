@@ -5,7 +5,7 @@ import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserService;
-import com.example.demo.module.user.in_dto.Login_OutDTO;
+import com.example.demo.module.user.out_dto.Login_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

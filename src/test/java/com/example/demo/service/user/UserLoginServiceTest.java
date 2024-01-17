@@ -7,23 +7,19 @@ import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.UserService;
 import com.example.demo.module.user.in_dto.Login_InDTO;
-import com.example.demo.module.user.in_dto.Login_OutDTO;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.demo.module.user.out_dto.Login_OutDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
