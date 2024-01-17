@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,5 +23,16 @@ public class BoardController {
         log.debug("게시글 목록 - GET, Controller");
 
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findAll(boardListSearchInDTO, pageable)));
+    }
+
+
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<?> detail(@PathVariable Long boardId) {
+        log.debug("GET - 게시글 상세 페이지");
+
+        boardService.viewsCount(boardId);
+        boardService.findDetailById(boardId);
+
+        return null;
     }
 }
