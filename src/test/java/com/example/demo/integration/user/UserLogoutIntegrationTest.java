@@ -30,8 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class UserLogoutIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Autowired private MockMvc mockMvc;
 
     @Autowired private RefreshTokenRepository refreshTokenRepository;
     @Autowired private MyJwtProvider myJwtProvider;

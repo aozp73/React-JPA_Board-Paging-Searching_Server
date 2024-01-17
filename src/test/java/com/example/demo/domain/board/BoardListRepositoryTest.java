@@ -35,6 +35,7 @@ public class BoardListRepositoryTest {
     @BeforeEach
     public void init() {
         // rollBack_AutoIncrement
+        em.getEntityManager().createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
         em.getEntityManager().createNativeQuery("ALTER TABLE board_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
 
         /**

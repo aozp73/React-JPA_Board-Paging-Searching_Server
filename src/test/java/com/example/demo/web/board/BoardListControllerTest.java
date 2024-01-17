@@ -37,7 +37,6 @@ public class BoardListControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private BoardService boardService;
 
@@ -79,7 +78,7 @@ public class BoardListControllerTest {
     @DisplayName("게시글 목록조회 성공 - parameter 전달")
     public void list_transmitParam_SuccessTest() throws Exception {
         // given
-        String param = "?searchType=title&searchKeyword=aozp&page=1";
+        String param = "?searchType=author&searchKeyword=aozp&page=1";
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/api/board" + param)
@@ -101,7 +100,7 @@ public class BoardListControllerTest {
             assertEquals(1, capturedPageable.getPageNumber());
             assertEquals(5, capturedPageable.getPageSize());
             assertEquals(5, capturedPageable.getOffset());
-            assertEquals("title", capturedSearchDTO.getSearchType());
+            assertEquals("author", capturedSearchDTO.getSearchType());
             assertEquals("aozp", capturedSearchDTO.getSearchKeyword());
     }
 }
