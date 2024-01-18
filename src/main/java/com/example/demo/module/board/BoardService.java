@@ -1,6 +1,7 @@
 package com.example.demo.module.board;
 
 import com.example.demo.exception.statuscode.CustomException;
+import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.out_dto.*;
@@ -44,7 +45,7 @@ public class BoardService {
         log.debug("게시글 상세 페이지 - GET, Service 1");
 
         Board boardEntity = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException("게시물이 존재하지 않습니다."));
+                .orElseThrow(() -> new Exception400("게시물이 존재하지 않습니다."));
 
         boardEntity.setViews(boardEntity.getViews() + 1);
     }

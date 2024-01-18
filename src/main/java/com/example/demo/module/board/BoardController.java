@@ -2,13 +2,11 @@ package com.example.demo.module.board;
 
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
-import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
