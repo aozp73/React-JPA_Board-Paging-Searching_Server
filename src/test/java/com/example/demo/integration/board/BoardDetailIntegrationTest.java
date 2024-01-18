@@ -1,9 +1,9 @@
 package com.example.demo.integration.board;
 
 import com.example.demo.module.board.Board;
-import com.example.demo.module.comment.Comment;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
+import com.example.demo.util.DummyEntityHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -44,14 +43,14 @@ public class BoardDetailIntegrationTest {
          * - user Entity 3건
          * - comment Entity 2건
          */
-        User user1 = setUp_user("user1@naver.com", "user1", "abc1", UserRole.COMMON);
-        User user2 = setUp_user("user2@naver.com", "user2", "abc2", UserRole.COMMON);
-        User user3 = setUp_user("user3@naver.com", "user3", "abc3", UserRole.COMMON);
+        User user1 = DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        User user2 = DummyEntityHelper.setUpUser(em, "user2@naver.com", "user2", "abc2", UserRole.COMMON);
+        User user3 = DummyEntityHelper.setUpUser(em, "user3@naver.com", "user3", "abc3", UserRole.COMMON);
 
-        Board board1 = setUp_board(user1, "테스트 제목", "테스트 내용", 10);
+        Board board1 = DummyEntityHelper.setUpBoard(em, user1, "제목1", "내용1", 10);
 
-        setUp_Comment(user2, board1, "테스트 댓글 1");
-        setUp_Comment(user3, board1, "테스트 댓글 2");
+        DummyEntityHelper.setUpComment(em, user2, board1, "댓글1");
+        DummyEntityHelper.setUpComment(em, user3, board1, "댓글2");
 
         em.flush();
         em.clear();
@@ -74,25 +73,25 @@ public class BoardDetailIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("성공"))
 
                 .andExpect(jsonPath("$.data.boardDetailDTO.boardId").value(1L))
-                .andExpect(jsonPath("$.data.boardDetailDTO.title").value("테스트 제목"))
+                .andExpect(jsonPath("$.data.boardDetailDTO.title").value("제목1"))
                 .andExpect(jsonPath("$.data.boardDetailDTO.views").value(11))
-                .andExpect(jsonPath("$.data.boardDetailDTO.content").value("테스트 내용"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.createdAt").value("2022.02.10 20:30:00"))
+                .andExpect(jsonPath("$.data.boardDetailDTO.content").value("내용1"))
+                .andExpect(jsonPath("$.data.boardDetailDTO.createdAt").value(DummyEntityHelper.boardDetailTime))
                 .andExpect(jsonPath("$.data.boardDetailDTO.commentCount").value(2L))
                 .andExpect(jsonPath("$.data.boardDetailDTO.user.userId").value(1L))
                 .andExpect(jsonPath("$.data.boardDetailDTO.user.username").value("user1"))
 
                 .andExpect(jsonPath("$.data.commentListDTOS[0].commentId").value(1L))
-                .andExpect(jsonPath("$.data.commentListDTOS[0].content").value("테스트 댓글 1"))
+                .andExpect(jsonPath("$.data.commentListDTOS[0].content").value("댓글1"))
                 .andExpect(jsonPath("$.data.commentListDTOS[0].user.userId").value(2L))
                 .andExpect(jsonPath("$.data.commentListDTOS[0].user.username").value("user2"))
-                .andExpect(jsonPath("$.data.commentListDTOS[0].createdAt").value("2022.02.10 20:30:00"))
+                .andExpect(jsonPath("$.data.commentListDTOS[0].createdAt").value(DummyEntityHelper.boardDetailTime))
 
                 .andExpect(jsonPath("$.data.commentListDTOS[1].commentId").value(2L))
-                .andExpect(jsonPath("$.data.commentListDTOS[1].content").value("테스트 댓글 2"))
+                .andExpect(jsonPath("$.data.commentListDTOS[1].content").value("댓글2"))
                 .andExpect(jsonPath("$.data.commentListDTOS[1].user.userId").value(3L))
                 .andExpect(jsonPath("$.data.commentListDTOS[1].user.username").value("user3"))
-                .andExpect(jsonPath("$.data.commentListDTOS[1].createdAt").value("2022.02.10 20:30:00"))
+                .andExpect(jsonPath("$.data.commentListDTOS[1].createdAt").value(DummyEntityHelper.boardDetailTime))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -112,41 +111,4 @@ public class BoardDetailIntegrationTest {
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
                 .andDo(MockMvcResultHandlers.print());
     }
-
-    private User setUp_user(String email, String username, String password, UserRole role) {
-        User user = User.builder()
-                .email(email)
-                .username(username)
-                .password(password)
-                .role(role)
-                .createdAt(LocalDateTime.of(2022, 2, 10, 20, 30, 0))
-                .build();
-
-        return this.em.merge(user);
-    }
-
-    private Board setUp_board(User user, String title, String content, Integer views) {
-        Board board = Board.builder()
-                .user(user)
-                .title(title)
-                .content(content)
-                .views(views)
-                .createdAt(LocalDateTime.of(2022, 2, 10, 20, 30, 0))
-                .build();
-
-        return this.em.merge(board);
-    }
-
-    private void setUp_Comment(User user, Board board, String content) {
-        Comment comment = Comment.builder()
-                .user(user)
-                .board(board)
-                .content(content)
-                .createdAt(LocalDateTime.of(2022, 2, 10, 20, 30, 0))
-                .build();
-
-        this.em.persist(comment);
-    }
-
-
 }

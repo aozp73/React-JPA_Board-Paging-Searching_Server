@@ -4,10 +4,9 @@ import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
 import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
-import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
-import com.example.demo.util.TestSecurityHelper;
+import com.example.demo.util.DummyEntityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import redis.embedded.RedisServer;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,10 +34,8 @@ public class RequestRefreshTokenIntegrationTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
 
-    @Autowired private UserRepository userRepository;
     @Autowired private RefreshTokenRepository refreshTokenRepository;
     @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired private MyJwtProvider myJwtProvider;
 
     private static RedisServer redisServer;
 
@@ -57,7 +53,7 @@ public class RequestRefreshTokenIntegrationTest {
          * - RefreshToken Entity 1건
          */
         String encodePassword = bCryptPasswordEncoder.encode("123456");
-        setUp_user("test@test.com", "test", encodePassword, UserRole.COMMON);
+        DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
         setUp_refreshToken(1L, "mockToken");
 
         em.flush();
@@ -94,8 +90,8 @@ public class RequestRefreshTokenIntegrationTest {
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.userId").value(1L))
-                .andExpect(jsonPath("$.data.username").value("test"))
-                .andExpect(jsonPath("$.data.email").value("test@test.com"))
+                .andExpect(jsonPath("$.data.username").value("user1"))
+                .andExpect(jsonPath("$.data.email").value("user1@naver.com"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -117,18 +113,6 @@ public class RequestRefreshTokenIntegrationTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.data").value("잘못된 RefreshToken 전송"))
                 .andDo(MockMvcResultHandlers.print());
-    }
-
-    private void setUp_user(String email, String username, String password, UserRole role) {
-        User user = User.builder()
-                .email(email)
-                .username(username)
-                .password(password)
-                .role(role)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        this.em.persist(user);
     }
 
     private void setUp_refreshToken(Long userId, String token) {

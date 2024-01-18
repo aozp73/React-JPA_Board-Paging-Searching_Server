@@ -1,9 +1,9 @@
 package com.example.demo.integration.board;
 
 import com.example.demo.module.board.Board;
-import com.example.demo.module.comment.Comment;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
+import com.example.demo.util.DummyEntityHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,20 +44,20 @@ public class BoardListIntegrationTest {
          * - user Entity 2건
          * - comment Entity 2건
          */
-        User user1 = setUp_user("user1@naver.com", "user1", "1234", UserRole.COMMON);
-        User user2 = setUp_user("user2@naver.com", "user2", "5678", UserRole.ADMIN);
+        User user1 = DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        User user2 = DummyEntityHelper.setUpUser(em, "user2@naver.com", "user2", "abc2", UserRole.COMMON);
 
-        Board board1 = setUp_board(user1, "제목 1", "내용 1", 1);
-        setUp_board(user1, "제목 2", "내용 2", 2);
-        setUp_board(user1, "제목 3", "내용 3", 3);
-        setUp_board(user1, "제목 4", "내용 4", 4);
-        setUp_board(user1, "제목 5", "내용 5", 5);
+        Board board1 = DummyEntityHelper.setUpBoard(em, user1, "제목1", "내용1", 10);
+        Board board2 = DummyEntityHelper.setUpBoard(em, user1, "제목2", "내용2", 20);
+        Board board3 = DummyEntityHelper.setUpBoard(em, user1, "제목3", "내용3", 30);
+        Board board4 = DummyEntityHelper.setUpBoard(em, user1, "제목4", "내용4", 40);
+        Board board5 = DummyEntityHelper.setUpBoard(em, user1, "제목5", "내용5", 50);
 
-        setUp_board(user2, "제목 6", "내용 6", 6);
-        Board board7 = setUp_board(user2, "제목 7", "내용 7", 7);
+        Board board6 = DummyEntityHelper.setUpBoard(em, user2, "제목6", "내용6", 60);
+        Board board7 = DummyEntityHelper.setUpBoard(em, user2, "제목7", "내용7", 70);
 
-        setUp_Comment(user1, board1, "댓글 1");
-        setUp_Comment(user2, board7, "댓글 2");
+        DummyEntityHelper.setUpComment(em, user1, board1, "댓글1");
+        DummyEntityHelper.setUpComment(em, user2, board7, "댓글2");
 
         em.flush();
         em.clear();
@@ -81,15 +80,15 @@ public class BoardListIntegrationTest {
 
                 .andExpect(jsonPath("$.data.boardList.content", hasSize(5)))
                 .andExpect(jsonPath("$.data.boardList.content[0].boardId").value(7))
-                .andExpect(jsonPath("$.data.boardList.content[0].title").value("제목 7"))
-                .andExpect(jsonPath("$.data.boardList.content[0].views").value("7"))
+                .andExpect(jsonPath("$.data.boardList.content[0].title").value("제목7"))
+                .andExpect(jsonPath("$.data.boardList.content[0].views").value("70"))
                 .andExpect(jsonPath("$.data.boardList.content[0].commentCount").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[0].user.userId").value(2))
                 .andExpect(jsonPath("$.data.boardList.content[0].user.username").value("user2"))
 
                 .andExpect(jsonPath("$.data.boardList.content[4].boardId").value(3))
-                .andExpect(jsonPath("$.data.boardList.content[4].title").value("제목 3"))
-                .andExpect(jsonPath("$.data.boardList.content[4].views").value("3"))
+                .andExpect(jsonPath("$.data.boardList.content[4].title").value("제목3"))
+                .andExpect(jsonPath("$.data.boardList.content[4].views").value("30"))
                 .andExpect(jsonPath("$.data.boardList.content[4].commentCount").value(0))
                 .andExpect(jsonPath("$.data.boardList.content[4].user.userId").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[4].user.username").value("user1"))
@@ -117,15 +116,15 @@ public class BoardListIntegrationTest {
 
                 .andExpect(jsonPath("$.data.boardList.content", hasSize(2)))
                 .andExpect(jsonPath("$.data.boardList.content[0].boardId").value(2))
-                .andExpect(jsonPath("$.data.boardList.content[0].title").value("제목 2"))
-                .andExpect(jsonPath("$.data.boardList.content[0].views").value("2"))
+                .andExpect(jsonPath("$.data.boardList.content[0].title").value("제목2"))
+                .andExpect(jsonPath("$.data.boardList.content[0].views").value("20"))
                 .andExpect(jsonPath("$.data.boardList.content[0].commentCount").value(0))
                 .andExpect(jsonPath("$.data.boardList.content[0].user.userId").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[0].user.username").value("user1"))
 
                 .andExpect(jsonPath("$.data.boardList.content[1].boardId").value(1))
-                .andExpect(jsonPath("$.data.boardList.content[1].title").value("제목 1"))
-                .andExpect(jsonPath("$.data.boardList.content[1].views").value("1"))
+                .andExpect(jsonPath("$.data.boardList.content[1].title").value("제목1"))
+                .andExpect(jsonPath("$.data.boardList.content[1].views").value("10"))
                 .andExpect(jsonPath("$.data.boardList.content[1].commentCount").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[1].user.userId").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[1].user.username").value("user1"))
@@ -153,15 +152,15 @@ public class BoardListIntegrationTest {
 
                 .andExpect(jsonPath("$.data.boardList.content", hasSize(5)))
                 .andExpect(jsonPath("$.data.boardList.content[0].boardId").value(5))
-                .andExpect(jsonPath("$.data.boardList.content[0].title").value("제목 5"))
-                .andExpect(jsonPath("$.data.boardList.content[0].views").value("5"))
+                .andExpect(jsonPath("$.data.boardList.content[0].title").value("제목5"))
+                .andExpect(jsonPath("$.data.boardList.content[0].views").value("50"))
                 .andExpect(jsonPath("$.data.boardList.content[0].commentCount").value(0))
                 .andExpect(jsonPath("$.data.boardList.content[0].user.userId").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[0].user.username").value("user1"))
 
                 .andExpect(jsonPath("$.data.boardList.content[4].boardId").value(1))
-                .andExpect(jsonPath("$.data.boardList.content[4].title").value("제목 1"))
-                .andExpect(jsonPath("$.data.boardList.content[4].views").value("1"))
+                .andExpect(jsonPath("$.data.boardList.content[4].title").value("제목1"))
+                .andExpect(jsonPath("$.data.boardList.content[4].views").value("10"))
                 .andExpect(jsonPath("$.data.boardList.content[4].commentCount").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[4].user.userId").value(1))
                 .andExpect(jsonPath("$.data.boardList.content[4].user.username").value("user1"))
@@ -169,40 +168,5 @@ public class BoardListIntegrationTest {
                 .andExpect(jsonPath("$.data.pageInfo.startPage").value(1))
                 .andExpect(jsonPath("$.data.pageInfo.endPage").value(1))
                 .andDo(MockMvcResultHandlers.print());
-    }
-
-    private User setUp_user(String email, String username, String password, UserRole role) {
-        User user = User.builder()
-                .email(email)
-                .username(username)
-                .password(password)
-                .role(role)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        return this.em.merge(user);
-    }
-
-    private Board setUp_board(User user, String title, String content, Integer views) {
-        Board board = Board.builder()
-                .user(user)
-                .title(title)
-                .content(content)
-                .views(views)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        return this.em.merge(board);
-    }
-
-    private void setUp_Comment(User user, Board board, String content) {
-        Comment comment = Comment.builder()
-                .user(user)
-                .board(board)
-                .content(content)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        this.em.persist(comment);
     }
 }

@@ -3,15 +3,15 @@ package com.example.demo.domain.user;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
+import com.example.demo.util.DummyEntityHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,19 +23,19 @@ public class UserJoinRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private TestEntityManager em;
+    private EntityManager em;
 
     @BeforeEach
     public void init() {
         // rollBack_AutoIncrement
-        em.getEntityManager().createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
 
         /**
          * [초기 데이터 및 Save]
          * - User Entity 2건
          */
-        setUp_user("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        setUp_user("def@naver.com", "def", "5678", UserRole.ADMIN);
+        DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        DummyEntityHelper.setUpUser(em, "user2@naver.com", "user2", "abc2", UserRole.COMMON);
 
         em.flush();
         em.clear();
@@ -45,8 +45,8 @@ public class UserJoinRepositoryTest {
     @DisplayName("findByEmail 성공")
     void findByEmail_success() {
         // given
-        String email1 = "abc@naver.com";
-        String email2 = "def@naver.com";
+        String email1 = "user1@naver.com";
+        String email2 = "user2@naver.com";
 
         // when
         Optional<User> user1 = userRepository.findByEmail(email1);
@@ -58,18 +58,18 @@ public class UserJoinRepositoryTest {
 
         user1.ifPresent(foundUser -> {
             assertEquals(foundUser.getId(), 1L);
-            assertEquals(foundUser.getEmail(), "abc@naver.com");
-            assertEquals(foundUser.getUsername(), "abc");
-            assertEquals(foundUser.getPassword(), "1234");
+            assertEquals(foundUser.getEmail(), "user1@naver.com");
+            assertEquals(foundUser.getUsername(), "user1");
+            assertEquals(foundUser.getPassword(), "abc1");
             assertEquals(foundUser.getRole(), UserRole.COMMON);
         });
 
         user2.ifPresent(foundUser -> {
             assertEquals(foundUser.getId(), 2L);
-            assertEquals(foundUser.getEmail(), "def@naver.com");
-            assertEquals(foundUser.getUsername(), "def");
-            assertEquals(foundUser.getPassword(), "5678");
-            assertEquals(foundUser.getRole(), UserRole.ADMIN);
+            assertEquals(foundUser.getEmail(), "user2@naver.com");
+            assertEquals(foundUser.getUsername(), "user2");
+            assertEquals(foundUser.getPassword(), "abc2");
+            assertEquals(foundUser.getRole(), UserRole.COMMON);
         });
     }
 
@@ -77,24 +77,12 @@ public class UserJoinRepositoryTest {
     @DisplayName("findByEmail 실패")
     void findByEmail_fail() {
         // given
-        String email1 = "ghi@naver.com";
+        String email1 = "wrong@naver.com";
 
         // when
         Optional<User> user1 = userRepository.findByEmail(email1);
 
         // then
         assertFalse(user1.isPresent());
-    }
-
-    private void setUp_user(String email, String username, String password, UserRole role) {
-        User user = User.builder()
-                .email(email)
-                .username(username)
-                .password(password)
-                .role(role)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        this.em.persist(user);
     }
 }

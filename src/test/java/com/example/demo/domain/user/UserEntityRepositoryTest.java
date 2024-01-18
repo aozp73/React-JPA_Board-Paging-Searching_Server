@@ -3,14 +3,14 @@ package com.example.demo.domain.user;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
+import com.example.demo.util.DummyEntityHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,19 +23,19 @@ public class UserEntityRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private TestEntityManager em;
+    private EntityManager em;
 
     @BeforeEach
     public void init() {
         // rollBack_AutoIncrement
-        em.getEntityManager().createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
 
         /**
          * [초기 데이터 및 Save]
          * - User Entity 2건
          */
-        setUp_user("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        setUp_user("def@naver.com", "def", "5678", UserRole.ADMIN);
+        DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        DummyEntityHelper.setUpUser(em, "user2@naver.com", "user2", "abc2", UserRole.COMMON);
 
         em.flush();
         em.clear();
@@ -53,9 +53,9 @@ public class UserEntityRepositoryTest {
         assertTrue(user.isPresent());
 
         user.ifPresent(foundUser -> {
-            assertEquals(foundUser.getEmail(), "abc@naver.com");
-            assertEquals(foundUser.getUsername(), "abc");
-            assertEquals(foundUser.getPassword(), "1234");
+            assertEquals(foundUser.getEmail(), "user1@naver.com");
+            assertEquals(foundUser.getUsername(), "user1");
+            assertEquals(foundUser.getPassword(), "abc1");
             assertEquals(foundUser.getRole(), UserRole.COMMON);
         });
 
@@ -73,16 +73,16 @@ public class UserEntityRepositoryTest {
         assertEquals(users.size(), 2);
 
         User foundUser1 = users.get(0);
-        assertEquals(foundUser1.getEmail(), "abc@naver.com");
-        assertEquals(foundUser1.getUsername(), "abc");
-        assertEquals(foundUser1.getPassword(), "1234");
+        assertEquals(foundUser1.getEmail(), "user1@naver.com");
+        assertEquals(foundUser1.getUsername(), "user1");
+        assertEquals(foundUser1.getPassword(), "abc1");
         assertEquals(foundUser1.getRole(), UserRole.COMMON);
 
         User foundUser2 = users.get(1);
-        assertEquals(foundUser2.getEmail(), "def@naver.com");
-        assertEquals(foundUser2.getUsername(), "def");
-        assertEquals(foundUser2.getPassword(), "5678");
-        assertEquals(foundUser2.getRole(), UserRole.ADMIN);
+        assertEquals(foundUser2.getEmail(), "user2@naver.com");
+        assertEquals(foundUser2.getUsername(), "user2");
+        assertEquals(foundUser2.getPassword(), "abc2");
+        assertEquals(foundUser2.getRole(), UserRole.COMMON);
     }
 
     @Test
@@ -123,18 +123,6 @@ public class UserEntityRepositoryTest {
 
         // then
         assertFalse(deletedUser.isPresent());
-    }
-
-    private void setUp_user(String email, String username, String password, UserRole role) {
-        User user = User.builder()
-                .email(email)
-                .username(username)
-                .password(password)
-                .role(role)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        this.em.persist(user);
     }
 }
 

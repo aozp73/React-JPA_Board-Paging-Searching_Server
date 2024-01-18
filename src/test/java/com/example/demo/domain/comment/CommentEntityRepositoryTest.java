@@ -5,14 +5,14 @@ import com.example.demo.module.comment.Comment;
 import com.example.demo.module.comment.CommentRepository;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
+import com.example.demo.util.DummyEntityHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +25,14 @@ public class CommentEntityRepositoryTest {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
-    private TestEntityManager em;
+    private EntityManager em;
 
     @BeforeEach
     public void init() {
         // rollBack_AutoIncrement
-        em.getEntityManager().createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
-        em.getEntityManager().createNativeQuery("ALTER TABLE board_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
-        em.getEntityManager().createNativeQuery("ALTER TABLE comment_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE board_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+        em.createNativeQuery("ALTER TABLE comment_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
 
         /**
          * [초기 데이터 및 Save]
@@ -40,10 +40,14 @@ public class CommentEntityRepositoryTest {
          * - Board Entity 1건
          * - Comment Entity 2건
          */
-        User user = setUp_user("abc@naver.com", "abc", "1234", UserRole.COMMON);
-        Board board = setUp_board(user, "저장 제목", "저장 내용", 1);
-        setUp_comment(user, board, "저장 댓글1");
-        setUp_comment(user, board, "저장 댓글2");
+        User user1 = DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        User user2 = DummyEntityHelper.setUpUser(em, "user2@naver.com", "user2", "abc2", UserRole.COMMON);
+        User user3 = DummyEntityHelper.setUpUser(em, "user3@naver.com", "user3", "abc3", UserRole.COMMON);
+
+        Board board1 = DummyEntityHelper.setUpBoard(em, user1, "제목1", "내용1", 10);
+
+        DummyEntityHelper.setUpComment(em, user2, board1, "댓글1");
+        DummyEntityHelper.setUpComment(em, user3, board1, "댓글2");
 
         em.flush();
         em.clear();
@@ -61,11 +65,11 @@ public class CommentEntityRepositoryTest {
         assertTrue(comment.isPresent());
 
         comment.ifPresent(foundComment -> {
-            assertEquals(foundComment.getUser().getId(), 1L);
-            assertEquals(foundComment.getUser().getUsername(), "abc");
+            assertEquals(foundComment.getUser().getId(), 2L);
+            assertEquals(foundComment.getUser().getUsername(), "user2");
             assertEquals(foundComment.getBoard().getId(), 1L);
-            assertEquals(foundComment.getBoard().getTitle(), "저장 제목");
-            assertEquals(foundComment.getContent(), "저장 댓글1");
+            assertEquals(foundComment.getBoard().getTitle(), "제목1");
+            assertEquals(foundComment.getContent(), "댓글1");
         });
 
         assertFalse(commentRepository.findById(3L).isPresent());
@@ -82,18 +86,20 @@ public class CommentEntityRepositoryTest {
         assertEquals(comments.size(), 2);
 
         Comment foundComment1 = comments.get(0);
-        assertEquals(foundComment1.getUser().getId(), 1L);
-        assertEquals(foundComment1.getUser().getUsername(), "abc");
+        assertEquals(foundComment1.getId(), 1L);
+        assertEquals(foundComment1.getUser().getId(), 2L);
+        assertEquals(foundComment1.getUser().getUsername(), "user2");
         assertEquals(foundComment1.getBoard().getId(), 1L);
-        assertEquals(foundComment1.getBoard().getTitle(), "저장 제목");
-        assertEquals(foundComment1.getContent(), "저장 댓글1");
+        assertEquals(foundComment1.getBoard().getTitle(), "제목1");
+        assertEquals(foundComment1.getContent(), "댓글1");
 
         Comment foundComment2 = comments.get(1);
-        assertEquals(foundComment2.getUser().getId(), 1L);
-        assertEquals(foundComment2.getUser().getUsername(), "abc");
+        assertEquals(foundComment2.getId(), 2L);
+        assertEquals(foundComment2.getUser().getId(), 3L);
+        assertEquals(foundComment2.getUser().getUsername(), "user3");
         assertEquals(foundComment2.getBoard().getId(), 1L);
-        assertEquals(foundComment2.getBoard().getTitle(), "저장 제목");
-        assertEquals(foundComment2.getContent(), "저장 댓글2");
+        assertEquals(foundComment2.getBoard().getTitle(), "제목1");
+        assertEquals(foundComment2.getContent(), "댓글2");
     }
 
     @Test
@@ -134,40 +140,5 @@ public class CommentEntityRepositoryTest {
 
         // then
         assertFalse(deletedComment.isPresent());
-    }
-
-    private User setUp_user(String email, String username, String password, UserRole role) {
-        User user = User.builder()
-                .email(email)
-                .username(username)
-                .password(password)
-                .role(role)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        return this.em.persist(user);
-    }
-
-    private Board setUp_board(User user, String title, String content, int views) {
-        Board board = Board.builder()
-                .user(user)
-                .title(title)
-                .content(content)
-                .views(views)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        return this.em.persist(board);
-    }
-
-    private void setUp_comment(User user, Board board, String content) {
-        Comment comment = Comment.builder()
-                .user(user)
-                .board(board)
-                .content(content)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        this.em.persist(comment);
     }
 }
