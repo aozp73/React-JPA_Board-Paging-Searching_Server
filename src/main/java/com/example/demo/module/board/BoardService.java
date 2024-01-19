@@ -5,6 +5,7 @@ import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.in_dto.BoardSave_InDTO;
+import com.example.demo.module.board.in_dto.BoardUpdate_InDTO;
 import com.example.demo.module.board.out_dto.*;
 import com.example.demo.module.comment.CommentRepository;
 import com.example.demo.module.comment.out_dto.CommentListFlatDTO;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor @Slf4j
@@ -100,5 +102,17 @@ public class BoardService {
         }
 
         return new BoardDetail_OutDTO(boardDetailDTO);
+    }
+
+    @Transactional
+    public void update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
+        Board boardEntity = boardRepository.findById(boardUpdateInDTO.getId())
+                .orElseThrow(() -> new CustomException("게시물이 존재하지 않습니다."));
+
+        if (!Objects.equals(boardEntity.getUser().getId(), userId)) {
+            throw new CustomException("작성자만 수정할 수 있습니다.");
+        }
+
+        boardUpdateInDTO.toEntity(boardEntity);
     }
 }
