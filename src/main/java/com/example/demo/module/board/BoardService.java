@@ -4,9 +4,12 @@ import com.example.demo.exception.statuscode.CustomException;
 import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
+import com.example.demo.module.board.in_dto.BoardSave_InDTO;
 import com.example.demo.module.board.out_dto.*;
 import com.example.demo.module.comment.CommentRepository;
 import com.example.demo.module.comment.out_dto.CommentListFlatDTO;
+import com.example.demo.module.user.User;
+import com.example.demo.module.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor @Slf4j
 public class BoardService {
 
+    private final UserRepository userRepository;
     private final BoardQueryRepository boardQueryRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
@@ -68,5 +72,20 @@ public class BoardService {
         }
 
         return new BoardDetail_OutDTO(boardDetailDTO, boardDetailCommentDTOS);
+    }
+
+    @Transactional
+    public void save(BoardSave_InDTO boardSaveInDTO, Long userId) {
+        log.debug("게시글 등록 - POST, Service");
+
+        User userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception400("회원 정보를 확인해주세요."));
+
+        Board board = boardSaveInDTO.toEntity(userEntity);
+        try {
+            boardRepository.save(board);
+        } catch (Exception exception) {
+            throw new Exception500("게시글 저장에 실패하였습니다.");
+        }
     }
 }
