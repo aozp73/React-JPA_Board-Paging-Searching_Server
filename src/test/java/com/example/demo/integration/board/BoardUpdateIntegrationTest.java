@@ -110,9 +110,9 @@ public class BoardUpdateIntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.msg").value("badRequest"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.msg").value("unAuthorized"))
                 .andExpect(jsonPath("$.data").value("작성자만 수정할 수 있습니다."))
                 .andDo(MockMvcResultHandlers.print());
     }

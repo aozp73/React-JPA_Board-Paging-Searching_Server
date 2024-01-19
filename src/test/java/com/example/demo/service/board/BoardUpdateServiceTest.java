@@ -1,6 +1,6 @@
 package com.example.demo.service.board;
 
-import com.example.demo.exception.statuscode.Exception400;
+import com.example.demo.exception.statuscode.Exception401;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.board.BoardRepository;
 import com.example.demo.module.board.BoardService;
@@ -78,7 +78,7 @@ public class BoardUpdateServiceTest {
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(userEntity));
 
         // when & then
-        Exception400 thrown = assertThrows(Exception400.class, () -> boardService.update(boardUpdateInDTO, 2L));
+        Exception401 thrown = assertThrows(Exception401.class, () -> boardService.update(boardUpdateInDTO, 2L));
         assertEquals("작성자만 수정할 수 있습니다.", thrown.getMessage());
 
         verify(boardRepository).findById(any(Long.class));

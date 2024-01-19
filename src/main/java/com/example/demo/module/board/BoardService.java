@@ -1,8 +1,6 @@
 package com.example.demo.module.board;
 
-import com.example.demo.exception.statuscode.CustomException;
-import com.example.demo.exception.statuscode.Exception400;
-import com.example.demo.exception.statuscode.Exception500;
+import com.example.demo.exception.statuscode.*;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.in_dto.BoardSave_InDTO;
 import com.example.demo.module.board.in_dto.BoardUpdate_InDTO;
@@ -52,7 +50,7 @@ public class BoardService {
         log.debug("게시글 상세 페이지 - GET, Service 1");
 
         Board boardEntity = boardRepository.findById(boardId)
-                .orElseThrow(() -> new Exception400("게시물이 존재하지 않습니다."));
+                .orElseThrow(() -> new Exception404("게시물이 존재하지 않습니다."));
 
         boardEntity.setViews(boardEntity.getViews() + 1);
     }
@@ -82,7 +80,7 @@ public class BoardService {
         log.debug("게시글 등록 - POST, Service");
 
         User userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new Exception400("회원 정보를 확인해주세요."));
+                .orElseThrow(() -> new Exception404("회원 정보를 확인해주세요."));
 
         // 요청값 DB 저장
         Board board = boardSaveInDTO.toEntity(userEntity);
@@ -96,16 +94,32 @@ public class BoardService {
         return getBoardDetailOutDTO(board);
     }
 
+
+    @Transactional(readOnly = true)
+    public BoardUpdate_OutDTO updateForm(Long boardId, Long userId) {
+
+        Board boardEntity = boardRepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("게시물이 존재하지 않습니다."));
+
+        if (!Objects.equals(boardEntity.getUser().getId(), userId)) {
+            throw new Exception401("작성자만 수정할 수 있습니다.");
+        }
+
+        return new BoardUpdate_OutDTO().fromEntity(boardEntity);
+    }
+
     @Transactional
     public BoardDetail_OutDTO update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
-        Board boardEntity = boardRepository.findById(boardUpdateInDTO.getId())
-                .orElseThrow(() -> new Exception400("게시물이 존재하지 않습니다."));
+        log.debug("게시글 수정 - PUT, Service");
 
-        User userEntity = userRepository.findById(userId)
+        Board boardEntity = boardRepository.findById(boardUpdateInDTO.getId())
+                .orElseThrow(() -> new Exception404("게시물이 존재하지 않습니다."));
+
+        userRepository.findById(userId)
                 .orElseThrow(() -> new Exception400("회원 정보를 확인해주세요."));
 
         if (!Objects.equals(boardEntity.getUser().getId(), userId)) {
-            throw new Exception400("작성자만 수정할 수 있습니다.");
+            throw new Exception401("작성자만 수정할 수 있습니다.");
         }
 
         // 요청값 DB 반영
@@ -115,6 +129,10 @@ public class BoardService {
         return getBoardDetailOutDTO(boardEntity);
     }
 
+    /**
+     * 호출: 게시글 등록, 수정
+     * 기능: Client가 렌더링 할 DB 데이터 반환
+     */
     private BoardDetail_OutDTO getBoardDetailOutDTO(Board boardEntity) {
         BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
 

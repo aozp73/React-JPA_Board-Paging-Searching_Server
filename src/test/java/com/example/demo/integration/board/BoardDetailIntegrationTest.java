@@ -107,7 +107,7 @@ public class BoardDetailIntegrationTest {
 
         // then
         resultActions
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
                 .andDo(MockMvcResultHandlers.print());
     }

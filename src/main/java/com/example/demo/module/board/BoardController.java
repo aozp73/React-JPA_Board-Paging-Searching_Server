@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,6 +49,14 @@ public class BoardController {
         log.debug("게시글 등록 - POST, Controller");
 
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.save(boardSaveInDTO, myUserDetails.getUser().getId())));
+    }
+
+    @GetMapping("/auth/board/{boardId}")
+    public ResponseEntity<?> updateForm(@PathVariable Long boardId,
+                             @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        log.debug("게시글 수정 페이지 - GET, Controller");
+
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.updateForm(boardId, myUserDetails.getUser().getId())));
     }
 
     @PutMapping("/auth/board")
