@@ -29,6 +29,7 @@ public class BoardSave_InDTO {
                 .content(this.content)
                 .views(0)
                 .createdAt(LocalDateTime.now())
+                .updated_at(LocalDateTime.now())
                 .build();
     }
 }

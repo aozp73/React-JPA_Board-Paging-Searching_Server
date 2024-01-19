@@ -84,7 +84,7 @@ public class BoardService {
         User userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception400("회원 정보를 확인해주세요."));
 
-        // 요청값 저장
+        // 요청값 DB 저장
         Board board = boardSaveInDTO.toEntity(userEntity);
         try {
             boardRepository.save(board);
@@ -93,19 +93,11 @@ public class BoardService {
         }
 
         // 저장 데이터 반환
-        BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
-        System.out.println("board.getId() = " + board.getId());
-        try {
-            boardDetailDTO = boardRepository.findBoardDetailWithUserForDetail(board.getId());
-        } catch(Exception exception) {
-            throw new Exception500("게시글 상세 조회에 실패하였습니다.");
-        }
-
-        return new BoardDetail_OutDTO(boardDetailDTO);
+        return getBoardDetailOutDTO(board);
     }
 
     @Transactional
-    public void update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
+    public BoardDetail_OutDTO update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
         Board boardEntity = boardRepository.findById(boardUpdateInDTO.getId())
                 .orElseThrow(() -> new CustomException("게시물이 존재하지 않습니다."));
 
@@ -113,6 +105,22 @@ public class BoardService {
             throw new CustomException("작성자만 수정할 수 있습니다.");
         }
 
+        // 요청값 DB 반영
         boardUpdateInDTO.toEntity(boardEntity);
+
+        // 저장 데이터 반환
+        return getBoardDetailOutDTO(boardEntity);
+    }
+
+    private BoardDetail_OutDTO getBoardDetailOutDTO(Board boardEntity) {
+        BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
+        System.out.println("board.getId() = " + boardEntity.getId());
+        try {
+            boardDetailDTO = boardRepository.findBoardDetailWithUserForDetail(boardEntity.getId());
+        } catch(Exception exception) {
+            throw new Exception500("게시글 상세 조회에 실패하였습니다.");
+        }
+
+        return new BoardDetail_OutDTO(boardDetailDTO);
     }
 }

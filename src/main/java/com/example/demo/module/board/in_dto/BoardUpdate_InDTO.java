@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -24,6 +25,7 @@ public class BoardUpdate_InDTO {
     public Board toEntity(Board boardEntity) {
         boardEntity.setTitle(this.title);
         boardEntity.setContent(this.content);
+        boardEntity.setUpdated_at(LocalDateTime.now());
 
         return boardEntity;
     }

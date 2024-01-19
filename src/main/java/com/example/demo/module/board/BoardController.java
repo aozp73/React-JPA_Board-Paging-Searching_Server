@@ -55,8 +55,6 @@ public class BoardController {
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 수정 - PUT, Controller");
 
-        boardService.update(boardUpdateInDTO, myUserDetails.getUser().getId());
-
-        return ResponseEntity.ok().body(new ResponseDTO<>());
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.update(boardUpdateInDTO, myUserDetails.getUser().getId())));
     }
 }
