@@ -1,6 +1,7 @@
 package com.example.demo.integration.board;
 
-import com.example.demo.module.board.in_dto.BoardSave_InDTO;
+import com.example.demo.module.board.in_dto.BoardUpdate_InDTO;
+import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
 import com.example.demo.util.DummyEntityHelper;
 import com.example.demo.util.TestSecurityHelper;
@@ -21,17 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardSaveIntegrationTest {
+public class BoardUpdateIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
+
 
     @BeforeEach
     public void setUp() {
@@ -43,10 +45,17 @@ public class BoardSaveIntegrationTest {
 
         /**
          * [초기 데이터 및 Save]
-         * - user Entity 1건
+         * - user Entity 2건
+         * - board Entity 1건
          */
-        DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        User user1 = DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        User user2 = DummyEntityHelper.setUpUser(em, "user2@naver.com", "user2", "abc2", UserRole.COMMON);
 
+        DummyEntityHelper.setUpBoard(em, user1, "제목1", "내용1", 10);
+        DummyEntityHelper.setUpBoard(em, user2, "제목2", "내용2", 10);
+
+        em.flush();
+        em.clear();
     }
 
     @AfterEach
@@ -55,14 +64,14 @@ public class BoardSaveIntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 등록 성공")
-    public void save_SuccessTest() throws Exception {
+    @DisplayName("게시글 수정 성공")
+    public void update_SuccessTest() throws Exception {
         // given
-        BoardSave_InDTO boardSaveInDTO = make_BoardSave_InDTO();
-        String content = new ObjectMapper().writeValueAsString(boardSaveInDTO);
+        BoardUpdate_InDTO boardUpdateInDTO = make_BoardUpdate_InDTO();
+        String content = new ObjectMapper().writeValueAsString(boardUpdateInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/auth/board")
+        ResultActions resultActions = mockMvc.perform(put("/api/auth/board")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -73,13 +82,10 @@ public class BoardSaveIntegrationTest {
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.msg").value("성공"))
 
-                .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.msg").value("성공"))
-
                 .andExpect(jsonPath("$.data.boardDetailDTO.boardId").value(1))
-                .andExpect(jsonPath("$.data.boardDetailDTO.title").value("제목1"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.content").value("내용1"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.views").value(0))
+                .andExpect(jsonPath("$.data.boardDetailDTO.title").value("수정 제목1"))
+                .andExpect(jsonPath("$.data.boardDetailDTO.content").value("수정 내용1"))
+                .andExpect(jsonPath("$.data.boardDetailDTO.views").value(10))
                 .andExpect(jsonPath("$.data.boardDetailDTO.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.data.boardDetailDTO.commentCount").value(0))
                 .andExpect(jsonPath("$.data.boardDetailDTO.user.userId").value(1))
@@ -89,19 +95,15 @@ public class BoardSaveIntegrationTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-
     @Test
-    @DisplayName("게시글 등록 실패 - title / content 유효성")
-    public void save_titleContentValid_FailTest() throws Exception {
+    @DisplayName("게시글 수정 실패 - 다른 작성자의 글")
+    public void update_NotMatchWriter_FailTest() throws Exception {
         // given
-        BoardSave_InDTO boardSaveInDTO = BoardSave_InDTO.builder()
-                .title("")
-                .content("")
-                .build();
-        String content = new ObjectMapper().writeValueAsString(boardSaveInDTO);
+        BoardUpdate_InDTO boardUpdateInDTO = BoardUpdate_InDTO.builder().id(2L).title("수정 제목1").content("수정 제목2").build();
+        String content = new ObjectMapper().writeValueAsString(boardUpdateInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/auth/board")
+        ResultActions resultActions = mockMvc.perform(put("/api/auth/board")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -110,18 +112,17 @@ public class BoardSaveIntegrationTest {
         resultActions
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.msg").value("입력 값 확인"))
-                .andExpect(jsonPath("$.data.title").value("제목을 입력해주세요."))
-                .andExpect(jsonPath("$.data.content").value("내용을 입력해주세요."))
-
+                .andExpect(jsonPath("$.msg").value("badRequest"))
+                .andExpect(jsonPath("$.data").value("작성자만 수정할 수 있습니다."))
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    private BoardSave_InDTO make_BoardSave_InDTO() {
-        return BoardSave_InDTO.builder()
-                .title("제목1")
-                .content("내용1")
+
+    private BoardUpdate_InDTO make_BoardUpdate_InDTO() {
+        return BoardUpdate_InDTO.builder()
+                .id(1L)
+                .title("수정 제목1")
+                .content("수정 내용1")
                 .build();
     }
-
 }

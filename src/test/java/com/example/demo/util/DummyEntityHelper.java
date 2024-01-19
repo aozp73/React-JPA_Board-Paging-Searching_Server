@@ -45,6 +45,7 @@ public class DummyEntityHelper {
                 .content(content)
                 .views(views)
                 .createdAt(specificDateTime)
+                .updated_at(specificDateTime)
                 .build();
 
         em.persist(board);
