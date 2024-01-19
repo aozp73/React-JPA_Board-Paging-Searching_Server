@@ -1,15 +1,11 @@
 package com.example.demo.service.board;
 
 import com.example.demo.module.board.Board;
-import com.example.demo.module.board.BoardQueryRepository;
 import com.example.demo.module.board.BoardRepository;
 import com.example.demo.module.board.BoardService;
-import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.in_dto.BoardSave_InDTO;
 import com.example.demo.module.board.out_dto.BoardDetailFlatDTO;
 import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
-import com.example.demo.module.board.out_dto.BoardListDTO;
-import com.example.demo.module.board.out_dto.BoardList_OutDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
@@ -20,14 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 public class BoardSaveServiceTest {
