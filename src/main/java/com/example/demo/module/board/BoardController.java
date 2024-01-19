@@ -4,6 +4,7 @@ import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.in_dto.BoardSave_InDTO;
+import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +46,6 @@ public class BoardController {
                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 등록 - POST, Controller");
 
-        boardService.save(boardSaveInDTO, myUserDetails.getUser().getId());
-
-        return ResponseEntity.ok().body(new ResponseDTO<>());
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.save(boardSaveInDTO, myUserDetails.getUser().getId())));
     }
 }

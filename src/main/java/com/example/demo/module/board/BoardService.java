@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,8 +58,8 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardDetail_OutDTO findDetailById(Long boardId) {
         log.debug("게시글 상세 페이지 - GET, Service 2");
-        BoardDetailFlatDTO boardDetailDTO = null;
-        List<CommentListFlatDTO> boardDetailCommentDTOS = null;
+        BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
+        List<CommentListFlatDTO> boardDetailCommentDTOS = new ArrayList<>();
 
         try {
             boardDetailDTO = boardRepository.findBoardDetailWithUserForDetail(boardId);
@@ -75,17 +76,29 @@ public class BoardService {
     }
 
     @Transactional
-    public void save(BoardSave_InDTO boardSaveInDTO, Long userId) {
+    public BoardDetail_OutDTO save(BoardSave_InDTO boardSaveInDTO, Long userId) {
         log.debug("게시글 등록 - POST, Service");
 
         User userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new Exception400("회원 정보를 확인해주세요."));
 
+        // 요청값 저장
         Board board = boardSaveInDTO.toEntity(userEntity);
         try {
             boardRepository.save(board);
         } catch (Exception exception) {
             throw new Exception500("게시글 저장에 실패하였습니다.");
         }
+
+        // 저장 데이터 반환
+        BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
+
+        try {
+            boardDetailDTO = boardRepository.findBoardDetailWithUserForDetail(board.getId());
+        } catch(Exception exception) {
+            throw new Exception500("게시글 상세 조회에 실패하였습니다.");
+        }
+
+        return new BoardDetail_OutDTO(boardDetailDTO);
     }
 }
