@@ -1,9 +1,10 @@
 package com.example.demo.service.board;
 
+import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.board.BoardRepository;
 import com.example.demo.module.board.BoardService;
-import com.example.demo.module.board.in_dto.BoardSave_InDTO;
+import com.example.demo.module.board.in_dto.BoardUpdate_InDTO;
 import com.example.demo.module.board.out_dto.BoardDetailFlatDTO;
 import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
 import com.example.demo.module.user.User;
@@ -20,14 +21,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BoardSaveServiceTest {
+public class BoardUpdateServiceTest {
 
     @InjectMocks // 해당 파일에 있는 @Mock Bean 주입
     private BoardService boardService;
@@ -38,42 +37,59 @@ public class BoardSaveServiceTest {
     private BoardRepository boardRepository;
 
     @Test
-    @DisplayName("게시글 등록 성공")
-    public void save_Success() {
+    @DisplayName("게시글 수정 성공")
+    public void update_SuccessTest() {
         // given
-        BoardSave_InDTO boardSaveInDTO = make_BoardSave_InDTO();
+        BoardUpdate_InDTO boardUpdateInDTO = make_BoardUpdate_InDTO();
         User userEntity = DummyEntityHelper.setUpUser(1L, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        Board boardEntity = DummyEntityHelper.setUpBoard(1L, userEntity, "제목1", "내용1", 10);
 
+        when(boardRepository.findById(any(Long.class))).thenReturn(Optional.of(boardEntity));
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(userEntity));
-        when(boardRepository.save(any(Board.class))).thenAnswer(invocation -> {
-            Board savedBoard = invocation.getArgument(0);
-            savedBoard.setId(1L);
-            return savedBoard;
-        });
-
         when(boardRepository.findBoardDetailWithUserForDetail(any(Long.class))).thenReturn(make_BoardDetailFlatDTO());
 
         // when
-        BoardDetail_OutDTO result = boardService.save(boardSaveInDTO, 1L);
+        BoardDetail_OutDTO result = boardService.update(boardUpdateInDTO, 1L);
 
         // then
         assertNotNull(result);
         assertEquals(1, result.getBoardDetailDTO().getBoardId());
-        assertEquals("제목1", result.getBoardDetailDTO().getTitle());
-        assertEquals("내용1", result.getBoardDetailDTO().getContent());
-        assertEquals(0, result.getBoardDetailDTO().getViews());
+        assertEquals("수정 제목1", result.getBoardDetailDTO().getTitle());
+        assertEquals("수정 내용1", result.getBoardDetailDTO().getContent());
+        assertEquals(10, result.getBoardDetailDTO().getViews());
         assertEquals(0, result.getBoardDetailDTO().getCommentCount());
         assertEquals(1, result.getBoardDetailDTO().getUser().getUserId());
         assertEquals("user1", result.getBoardDetailDTO().getUser().getUsername());
 
         verify(userRepository).findById(any(Long.class));
-        verify(boardRepository).save(any(Board.class));
+        verify(boardRepository).findById(any(Long.class));
         verify(boardRepository).findBoardDetailWithUserForDetail(any(Long.class));
     }
 
-    private BoardSave_InDTO make_BoardSave_InDTO() {
+    @Test
+    @DisplayName("게시글 수정 실패 - 타 작성자의 게시글")
+    public void update_NotMatchWriter_FailTest() {
+        // given
+        BoardUpdate_InDTO boardUpdateInDTO = BoardUpdate_InDTO.builder().id(1L).title("수정 제목1").content("수정 내용1").build();
+        User userEntity = DummyEntityHelper.setUpUser(1L, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        Board boardEntity = DummyEntityHelper.setUpBoard(1L, userEntity, "제목1", "내용1", 10);
 
-        return BoardSave_InDTO.builder()
+        when(boardRepository.findById(any(Long.class))).thenReturn(Optional.of(boardEntity));
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(userEntity));
+
+        // when & then
+        Exception400 thrown = assertThrows(Exception400.class, () -> boardService.update(boardUpdateInDTO, 2L));
+        assertEquals("작성자만 수정할 수 있습니다.", thrown.getMessage());
+
+        verify(boardRepository).findById(any(Long.class));
+        verify(userRepository).findById(any(Long.class));
+        verify(boardRepository, never()).findBoardDetailWithUserForDetail(any(Long.class));
+    }
+
+    private BoardUpdate_InDTO make_BoardUpdate_InDTO() {
+
+        return BoardUpdate_InDTO.builder()
+                .id(1L)
                 .title("제목1")
                 .content("내용1")
                 .build();
@@ -83,9 +99,9 @@ public class BoardSaveServiceTest {
 
         return BoardDetailFlatDTO.builder()
                 .boardId(1L)
-                .title("제목1")
-                .content("내용1")
-                .views(0)
+                .title("수정 제목1")
+                .content("수정 내용1")
+                .views(10)
                 .createdAt(LocalDateTime.now())
                 .commentCount(0L)
 

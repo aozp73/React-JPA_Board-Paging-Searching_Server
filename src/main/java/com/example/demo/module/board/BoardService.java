@@ -99,10 +99,13 @@ public class BoardService {
     @Transactional
     public BoardDetail_OutDTO update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
         Board boardEntity = boardRepository.findById(boardUpdateInDTO.getId())
-                .orElseThrow(() -> new CustomException("게시물이 존재하지 않습니다."));
+                .orElseThrow(() -> new Exception400("게시물이 존재하지 않습니다."));
+
+        User userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception400("회원 정보를 확인해주세요."));
 
         if (!Objects.equals(boardEntity.getUser().getId(), userId)) {
-            throw new CustomException("작성자만 수정할 수 있습니다.");
+            throw new Exception400("작성자만 수정할 수 있습니다.");
         }
 
         // 요청값 DB 반영
@@ -114,7 +117,7 @@ public class BoardService {
 
     private BoardDetail_OutDTO getBoardDetailOutDTO(Board boardEntity) {
         BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
-        System.out.println("board.getId() = " + boardEntity.getId());
+
         try {
             boardDetailDTO = boardRepository.findBoardDetailWithUserForDetail(boardEntity.getId());
         } catch(Exception exception) {

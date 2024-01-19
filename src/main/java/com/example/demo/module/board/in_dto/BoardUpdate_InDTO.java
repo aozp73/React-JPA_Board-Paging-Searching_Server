@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardUpdate_InDTO {
