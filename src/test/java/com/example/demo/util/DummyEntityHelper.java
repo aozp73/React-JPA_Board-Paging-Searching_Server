@@ -26,6 +26,17 @@ public class DummyEntityHelper {
 
         return user;
     }
+    public static User setUpUser(Long id, String email, String username, String password, UserRole role) {
+
+        return User.builder()
+                .id(id)
+                .email(email)
+                .username(username)
+                .password(password)
+                .role(role)
+                .createdAt(specificDateTime)
+                .build();
+    }
 
     public static Board setUpBoard(EntityManager em, User user, String title, String content, Integer views) {
         Board board = Board.builder()
@@ -39,6 +50,17 @@ public class DummyEntityHelper {
         em.persist(board);
 
         return board;
+    }
+    public static Board setUpBoard(Long id, User user, String title, String content, Integer views) {
+
+        return Board.builder()
+                .id(id)
+                .user(user)
+                .title(title)
+                .content(content)
+                .views(views)
+                .createdAt(specificDateTime)
+                .build();
     }
 
     public static Comment setUpComment(EntityManager em, User user, Board board, String content) {

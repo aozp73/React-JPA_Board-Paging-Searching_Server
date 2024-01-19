@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class BoardSave_InDTO {
 
     @NotBlank(message = "제목을 입력해주세요.")

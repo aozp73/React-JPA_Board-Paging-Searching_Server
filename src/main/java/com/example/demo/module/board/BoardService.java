@@ -92,7 +92,7 @@ public class BoardService {
 
         // 저장 데이터 반환
         BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
-
+        System.out.println("board.getId() = " + board.getId());
         try {
             boardDetailDTO = boardRepository.findBoardDetailWithUserForDetail(board.getId());
         } catch(Exception exception) {
