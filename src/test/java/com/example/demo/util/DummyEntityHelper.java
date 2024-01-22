@@ -78,4 +78,15 @@ public class DummyEntityHelper {
 
         return comment;
     }
+    public static Comment setUpComment(Long id, User user, Board board, String content) {
+
+        return Comment.builder()
+                .id(id)
+                .user(user)
+                .board(board)
+                .content(content)
+                .createdAt(specificDateTime)
+                .updatedAt(specificDateTime)
+                .build();
+    }
 }

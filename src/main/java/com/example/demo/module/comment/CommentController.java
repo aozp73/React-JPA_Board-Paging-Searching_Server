@@ -29,7 +29,7 @@ public class CommentController {
     }
 
     @PutMapping("/auth/comment/{boardId}/{commentId}")
-    public ResponseEntity<?> update(@RequestBody CommentUpdate_InDTO commentUpdateInDTO,
+    public ResponseEntity<?> update(@RequestBody @Valid CommentUpdate_InDTO commentUpdateInDTO,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("댓글 수정 - PUT, Controller");
         commentService.update(commentUpdateInDTO, myUserDetails.getUser().getId());

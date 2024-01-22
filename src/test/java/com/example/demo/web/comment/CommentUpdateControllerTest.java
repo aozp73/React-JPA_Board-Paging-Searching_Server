@@ -5,7 +5,7 @@ import com.example.demo.config.security.MySecurityConfig;
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.module.comment.CommentController;
 import com.example.demo.module.comment.CommentService;
-import com.example.demo.module.comment.in_dto.CommentSave_InDTO;
+import com.example.demo.module.comment.in_dto.CommentUpdate_InDTO;
 import com.example.demo.module.comment.out_dto.CommentList_OutDTO;
 import com.example.demo.util.TestSecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,13 +29,15 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import({MySecurityConfig.class, MyJwtProvider.class, MyAuthenticationManagerConfig.class}) // 추가 하지 않을 경우, 기본 Security 설정 사용
 @WebMvcTest(CommentController.class)
-public class CommentSaveControllerTest {
+public class CommentUpdateControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,21 +55,26 @@ public class CommentSaveControllerTest {
         SecurityContextHolder.clearContext();
     }
 
+
     @Test
-    @DisplayName("댓글 저장 성공")
-    public void save_SuccessTest() throws Exception {
+    @DisplayName("댓글 수정 성공")
+    public void update_SuccessTest() throws Exception {
         // given
         Long userId = 1L;
-        CommentSave_InDTO commentSaveInDTO = CommentSave_InDTO.builder()
-                .boardId(1L)
-                .content("저장 댓글1")
-                .build();
-        String content = new ObjectMapper().writeValueAsString(commentSaveInDTO);
+        Long boardId = 1L;
+        Long commentId = 3L;
 
-        when(commentService.findAll(eq(commentSaveInDTO.getBoardId()), eq(userId))).thenReturn(make_CommentList_OutDTOS());
+        CommentUpdate_InDTO commentUpdateInDTO = CommentUpdate_InDTO.builder()
+                .boardId(1L)
+                .commentId(3L)
+                .content("수정 댓글 3")
+                .build();
+        String content = new ObjectMapper().writeValueAsString(commentUpdateInDTO);
+
+        when(commentService.findAll(eq(commentUpdateInDTO.getBoardId()), eq(userId))).thenReturn(make_CommentList_OutDTOS());
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/auth/comment")
+        ResultActions resultActions = mockMvc.perform(put("/api/auth/comment/" + boardId+ "/" + commentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -93,30 +100,34 @@ public class CommentSaveControllerTest {
                 .andExpect(jsonPath("$.data[1].user.username").value("user1"))
 
                 .andExpect(jsonPath("$.data[2].commentId").value(3))
-                .andExpect(jsonPath("$.data[2].content").value("저장 댓글 3"))
+                .andExpect(jsonPath("$.data[2].content").value("수정 댓글 3"))
                 .andExpect(jsonPath("$.data[2].editable").value(true))
                 .andExpect(jsonPath("$.data[2].createdAt").value("2024.01.22 16:38:31"))
                 .andExpect(jsonPath("$.data[2].user.userId").value(1))
                 .andExpect(jsonPath("$.data[2].user.username").value("user1"))
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(commentService).save(any(CommentSave_InDTO.class), any(Long.class));
+        verify(commentService).update(any(CommentUpdate_InDTO.class), any(Long.class));
         verify(commentService).findAll(any(Long.class), any(Long.class));
     }
 
     @Test
-    @DisplayName("댓글 저장 실패 - 댓글 빈 값")
+    @DisplayName("댓글 수정 실패 - 댓글 빈 값")
     public void save_contentEmpty_FailTest() throws Exception {
         // given
         Long userId = 1L;
-        CommentSave_InDTO commentSaveInDTO = CommentSave_InDTO.builder()
+        Long boardId = 1L;
+        Long commentId = 3L;
+
+        CommentUpdate_InDTO commentUpdateInDTO = CommentUpdate_InDTO.builder()
                 .boardId(1L)
+                .commentId(3L)
                 .content("")
                 .build();
-        String content = new ObjectMapper().writeValueAsString(commentSaveInDTO);
+        String content = new ObjectMapper().writeValueAsString(commentUpdateInDTO);
 
         // when
-        ResultActions resultActions = mockMvc.perform(post("/api/auth/comment")
+        ResultActions resultActions = mockMvc.perform(put("/api/auth/comment/" + boardId+ "/" + commentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON));
@@ -129,9 +140,10 @@ public class CommentSaveControllerTest {
                 .andExpect(jsonPath("$.data.content").value("댓글 내용을 입력해주세요."))
                 .andDo(MockMvcResultHandlers.print());
 
-        verify(commentService, never()).save(any(CommentSave_InDTO.class), any(Long.class));
+        verify(commentService, never()).update(any(CommentUpdate_InDTO.class), any(Long.class));
         verify(commentService, never()).findAll(any(Long.class), any(Long.class));
     }
+
 
 
     private List<CommentList_OutDTO> make_CommentList_OutDTOS() {
@@ -139,7 +151,7 @@ public class CommentSaveControllerTest {
 
         commentListOutDTOS.add(make_CommentList_OutDTO(1L, "댓글 1"));
         commentListOutDTOS.add(make_CommentList_OutDTO(2L, "댓글 2"));
-        commentListOutDTOS.add(make_CommentList_OutDTO(3L, "저장 댓글 3"));
+        commentListOutDTOS.add(make_CommentList_OutDTO(3L, "수정 댓글 3"));
 
         return commentListOutDTOS;
     }
