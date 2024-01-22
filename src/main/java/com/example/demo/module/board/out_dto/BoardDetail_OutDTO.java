@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 public class BoardDetail_OutDTO {
 
     BoardDetailDTO boardDetailDTO;
+
+    @Builder.Default
     List<CommentList_OutDTO> commentListDTOS = new ArrayList<>();
 
     public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO, List<CommentListFlatDTO> commentListFlatDTOS) {

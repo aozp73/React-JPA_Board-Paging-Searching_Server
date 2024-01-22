@@ -1,0 +1,22 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+:user: user-join-integration-test
+
+= REST API
+:toc: left
+:toclevels: 2
+:source-highlighter: highlightjs
+
+== User
+
+=== 회원가입 (성공)
+===== Request Example
+include::{snippets}/{user}/join_success/http-request.adoc[]
+
+===== Response Example
+include::{snippets}/{user}/join_success/http-response.adoc[]
+
+===== Curl
+include::{snippets}/{user}/join_success/curl-request.adoc[]

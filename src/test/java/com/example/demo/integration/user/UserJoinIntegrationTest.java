@@ -1,5 +1,6 @@
 package com.example.demo.integration.user;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -30,9 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
-public class UserJoinIntegrationTest {
+public class UserJoinIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -48,7 +51,7 @@ public class UserJoinIntegrationTest {
 
     @Test
     @DisplayName("회원가입 성공")
-    public void joinTest_Success() throws Exception {
+    public void join_success() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("abc@test.com")
@@ -70,6 +73,7 @@ public class UserJoinIntegrationTest {
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.msg").value("성공"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
 
 
         Optional<User> savedUser = userRepository.findByEmail("abc@test.com");
@@ -84,7 +88,7 @@ public class UserJoinIntegrationTest {
 
     @Test
     @DisplayName("회원가입 실패 - password 자릿 수")
-    public void joinValidTest_password() throws Exception {
+    public void join_fail_valid_password() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("abc@test.com")
@@ -113,7 +117,7 @@ public class UserJoinIntegrationTest {
 
     @Test
     @DisplayName("회원가입 실패 - username,password 자릿 수")
-    public void joinValidTest_password_username() throws Exception {
+    public void join_fail_valid_password_username() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("abc@test.com")
@@ -143,7 +147,7 @@ public class UserJoinIntegrationTest {
 
     @Test
     @DisplayName("회원가입 실패 - 공백")
-    public void joinValidTest_blank() throws Exception {
+    public void join_fail_blank() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("") // @NotBlank(message = "이메일을 입력해주세요")
