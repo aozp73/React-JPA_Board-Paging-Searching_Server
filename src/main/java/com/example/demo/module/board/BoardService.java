@@ -129,6 +129,24 @@ public class BoardService {
         return getBoardDetailOutDTO(boardEntity);
     }
 
+    @Transactional
+    public void delete(Long boardId, Long userId) {
+        log.debug("게시글 삭제 - DELETE, Service");
+
+        Board boardEntity = boardRepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("게시물이 존재하지 않습니다."));
+
+        if (!Objects.equals(boardEntity.getUser().getId(), userId)) {
+            throw new Exception401("작성자만 삭제할 수 있습니다.");
+        }
+
+        try {
+            boardRepository.deleteById(boardId);
+        } catch (Exception exception) {
+            throw new Exception500("게시글 삭제에 실패하였습니다.");
+        }
+    }
+
     /**
      * 호출: 게시글 등록, 수정
      * 기능: Client가 렌더링 할 DB 데이터 반환
