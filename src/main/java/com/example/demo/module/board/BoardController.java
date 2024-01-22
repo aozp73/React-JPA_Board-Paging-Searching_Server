@@ -33,7 +33,6 @@ public class BoardController {
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findAll(boardListSearchInDTO, pageable)));
     }
 
-
     @GetMapping("/board/{boardId}")
     public ResponseEntity<?> detail(@PathVariable Long boardId) {
         log.debug("게시글 상세 - GET, Controller");
@@ -67,9 +66,8 @@ public class BoardController {
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.update(boardUpdateInDTO, myUserDetails.getUser().getId())));
     }
 
-
     @DeleteMapping("/auth/board/{boardId}")
-    public ResponseEntity<?> save(@PathVariable Long boardId,
+    public ResponseEntity<?> delete(@PathVariable Long boardId,
                                   @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 삭제 - DELETE, Controller");
         boardService.delete(boardId, myUserDetails.getUser().getId());

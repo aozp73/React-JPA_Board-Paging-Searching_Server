@@ -34,8 +34,6 @@ public class CommentUpdateServiceTest {
     private CommentService commentService;
 
     @Mock
-    private UserRepository userRepository;
-    @Mock
     private BoardRepository boardRepository;
     @Mock
     private CommentRepository commentRepository;
@@ -68,8 +66,6 @@ public class CommentUpdateServiceTest {
         // given
         Long userId = 1L;
         CommentUpdate_InDTO commentUpdateInDTO = make_CommentUpdate_InDTO(2L, 1L,"테스트 저장 댓글1");
-
-        User userEntity = DummyEntityHelper.setUpUser(1L, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
 
         when(boardRepository.findById(eq(commentUpdateInDTO.getBoardId()))).thenReturn(Optional.empty());
 
