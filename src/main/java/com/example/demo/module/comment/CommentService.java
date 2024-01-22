@@ -76,4 +76,25 @@ public class CommentService {
 
         commentEntity.setContent(commentUpdateInDTO.getContent());
     }
+
+    @Transactional
+    public void delete(Long boardId, Long commentId, Long userId) {
+        log.debug("댓글 삭제 - DELETE, Service ");
+
+        boardRepository.findById(boardId)
+                .orElseThrow(() -> new Exception404("게시글이 존재하지 않습니다."));
+
+        Comment commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new Exception404("댓글이 존재하지 않습니다."));
+
+        if (!Objects.equals(commentEntity.getUser().getId(), userId)) {
+            throw new Exception400("댓글 작성자만 삭제할 수 있습니다.");
+        }
+
+        try {
+            commentRepository.deleteById(commentId);
+        } catch (Exception exception) {
+            throw new Exception500("댓글 삭제에 실패하였습니다.");
+        }
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor @Slf4j
@@ -36,5 +37,16 @@ public class CommentController {
 
         return ResponseEntity.ok().body(new ResponseDTO<>().data(commentService.findAll(commentUpdateInDTO.getBoardId(), myUserDetails.getUser().getId())));
     }
+
+
+    @DeleteMapping("/auth/comment/{boardId}/{commentId}")
+    public ResponseEntity<?> delete(@PathVariable Long commentId, @PathVariable Long boardId,
+                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
+        log.debug("댓글 삭제 - DELETE, Controller ");
+        commentService.delete(boardId, commentId, myUserDetails.getUser().getId());
+
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(commentService.findAll(boardId, myUserDetails.getUser().getId())));
+    }
+
 }
 
