@@ -64,6 +64,9 @@ public class CommentService {
     public void update(CommentUpdate_InDTO commentUpdateInDTO, Long userId) {
         log.debug("댓글 수정 - PUT, Service");
 
+        boardRepository.findById(commentUpdateInDTO.getBoardId())
+                .orElseThrow(() -> new Exception404("게시물이 존재하지 않습니다."));
+
         Comment commentEntity = commentRepository.findById(commentUpdateInDTO.getCommentId())
                 .orElseThrow(() -> new Exception404("댓글이 존재하지 않습니다."));
 

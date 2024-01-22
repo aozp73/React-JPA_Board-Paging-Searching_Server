@@ -7,7 +7,6 @@ import com.example.demo.module.board.BoardRepository;
 import com.example.demo.module.comment.Comment;
 import com.example.demo.module.comment.CommentRepository;
 import com.example.demo.module.comment.CommentService;
-import com.example.demo.module.comment.in_dto.CommentSave_InDTO;
 import com.example.demo.module.comment.in_dto.CommentUpdate_InDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
@@ -26,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CommentUpdateServiceTest {
@@ -53,13 +51,37 @@ public class CommentUpdateServiceTest {
         Board boardEntity = DummyEntityHelper.setUpBoard(1L, userEntity, "제목1", "내용1", 10);
         Comment commentEntity = DummyEntityHelper.setUpComment(1L, userEntity, boardEntity, "수정 댓글 1");
 
+        when(boardRepository.findById(eq(commentUpdateInDTO.getBoardId()))).thenReturn(Optional.of(boardEntity));
         when(commentRepository.findById(eq(commentUpdateInDTO.getCommentId()))).thenReturn(Optional.of(commentEntity));
 
         // when
         commentService.update(commentUpdateInDTO, userId);
 
         // then
+        verify(boardRepository).findById(any(Long.class));
         verify(commentRepository).findById(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("댓글 수정 실패 - 존재하지 않는 게시글")
+    public void update_notExistBoard_FailTest() {
+        // given
+        Long userId = 1L;
+        CommentUpdate_InDTO commentUpdateInDTO = make_CommentUpdate_InDTO(2L, 1L,"테스트 저장 댓글1");
+
+        User userEntity = DummyEntityHelper.setUpUser(1L, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+
+        when(boardRepository.findById(eq(commentUpdateInDTO.getBoardId()))).thenReturn(Optional.empty());
+
+        // when & then
+        Exception404 exception404 = assertThrows(Exception404.class, () ->
+                commentService.update(commentUpdateInDTO, userId)
+        );
+        assertEquals(exception404.getMessage(), "게시물이 존재하지 않습니다.");
+
+
+        verify(boardRepository).findById(any(Long.class));
+        verify(commentRepository, never()).findById(any(Long.class));
     }
 
     @Test
@@ -69,6 +91,10 @@ public class CommentUpdateServiceTest {
         Long userId = 1L;
         CommentUpdate_InDTO commentUpdateInDTO = make_CommentUpdate_InDTO(2L, 1L,"테스트 저장 댓글1");
 
+        User userEntity = DummyEntityHelper.setUpUser(1L, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
+        Board boardEntity = DummyEntityHelper.setUpBoard(1L, userEntity, "제목1", "내용1", 10);
+
+        when(boardRepository.findById(eq(commentUpdateInDTO.getBoardId()))).thenReturn(Optional.of(boardEntity));
         when(commentRepository.findById(eq(commentUpdateInDTO.getCommentId()))).thenReturn(Optional.empty());
 
         // when & then
@@ -77,6 +103,7 @@ public class CommentUpdateServiceTest {
         );
         assertEquals(exception404.getMessage(), "댓글이 존재하지 않습니다.");
 
+        verify(boardRepository).findById(any(Long.class));
         verify(commentRepository).findById(any(Long.class));
     }
 
@@ -91,6 +118,7 @@ public class CommentUpdateServiceTest {
         Board boardEntity = DummyEntityHelper.setUpBoard(1L, userEntity, "제목1", "내용1", 10);
         Comment commentEntity = DummyEntityHelper.setUpComment(1L, userEntity, boardEntity, "수정 댓글 1");
 
+        when(boardRepository.findById(eq(commentUpdateInDTO.getBoardId()))).thenReturn(Optional.of(boardEntity));
         when(commentRepository.findById(eq(commentUpdateInDTO.getCommentId()))).thenReturn(Optional.of(commentEntity));
 
         // when & then
@@ -99,6 +127,7 @@ public class CommentUpdateServiceTest {
         );
         assertEquals(exception401.getMessage(), "댓글 작성자만 수정할 수 있습니다.");
 
+        verify(boardRepository).findById(any(Long.class));
         verify(commentRepository).findById(any(Long.class));
     }
 
