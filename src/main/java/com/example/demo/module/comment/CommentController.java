@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/auth/comment")
-    public ResponseEntity<?> save(@RequestBody CommentSave_InDTO commentSaveInDTO,
+    public ResponseEntity<?> save(@RequestBody @Valid  CommentSave_InDTO commentSaveInDTO,
                                   @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("댓글 작성 - POST, Controller");
 

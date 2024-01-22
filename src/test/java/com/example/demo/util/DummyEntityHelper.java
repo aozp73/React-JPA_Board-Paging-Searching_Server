@@ -61,6 +61,7 @@ public class DummyEntityHelper {
                 .content(content)
                 .views(views)
                 .createdAt(specificDateTime)
+                .updated_at(specificDateTime)
                 .build();
     }
 
@@ -70,6 +71,7 @@ public class DummyEntityHelper {
                 .board(board)
                 .content(content)
                 .createdAt(specificDateTime)
+                .updatedAt(specificDateTime)
                 .build();
 
         em.persist(comment);
