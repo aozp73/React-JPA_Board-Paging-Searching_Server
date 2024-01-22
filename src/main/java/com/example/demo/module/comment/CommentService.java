@@ -82,13 +82,13 @@ public class CommentService {
         log.debug("댓글 삭제 - DELETE, Service ");
 
         boardRepository.findById(boardId)
-                .orElseThrow(() -> new Exception404("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new Exception404("게시물이 존재하지 않습니다."));
 
         Comment commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new Exception404("댓글이 존재하지 않습니다."));
 
         if (!Objects.equals(commentEntity.getUser().getId(), userId)) {
-            throw new Exception400("댓글 작성자만 삭제할 수 있습니다.");
+            throw new Exception401("댓글 작성자만 삭제할 수 있습니다.");
         }
 
         try {
