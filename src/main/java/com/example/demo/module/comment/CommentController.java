@@ -3,6 +3,7 @@ package com.example.demo.module.comment;
 import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.comment.in_dto.CommentSave_InDTO;
+import com.example.demo.module.comment.out_dto.CommentList_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,7 @@ public class CommentController {
 
         commentService.save(commentSaveInDTO, myUserDetails.getUser().getId());
 
-        // 전체 댓글 리 렌더링
-
-        return null;
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(commentService.findAll(commentSaveInDTO.getBoardId(), myUserDetails.getUser().getId())));
     }
 }
 

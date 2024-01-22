@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentListDTO {
+public class CommentList_OutDTO {
 
     private Long commentId;
     private String content;
@@ -26,12 +26,25 @@ public class CommentListDTO {
         private String username;
     }
 
-    public CommentListDTO(CommentListFlatDTO commentListFlatDTO) {
+    public CommentList_OutDTO(CommentListFlatDTO commentListFlatDTO) {
        this.commentId = commentListFlatDTO.getId();
        this.content = commentListFlatDTO.getContent();
 
        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
        this.createdAt = commentListFlatDTO.getCreatedAt().format(dateFormat);
+
+       this.user.userId = commentListFlatDTO.getUserId();
+       this.user.username = commentListFlatDTO.getUsername();
+    }
+
+    public CommentList_OutDTO(CommentListFlatDTO commentListFlatDTO, Long userId) {
+       this.commentId = commentListFlatDTO.getId();
+       this.content = commentListFlatDTO.getContent();
+
+       DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+       this.createdAt = commentListFlatDTO.getCreatedAt().format(dateFormat);
+
+       this.editable = commentListFlatDTO.getUserId().equals(userId);
 
        this.user.userId = commentListFlatDTO.getUserId();
        this.user.username = commentListFlatDTO.getUsername();

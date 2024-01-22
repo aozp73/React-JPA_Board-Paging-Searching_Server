@@ -4,8 +4,8 @@ import com.example.demo.module.board.BoardRepository;
 import com.example.demo.module.board.BoardService;
 import com.example.demo.module.board.out_dto.*;
 import com.example.demo.module.comment.CommentRepository;
-import com.example.demo.module.comment.out_dto.CommentListDTO;
 import com.example.demo.module.comment.out_dto.CommentListFlatDTO;
+import com.example.demo.module.comment.out_dto.CommentList_OutDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ public class BoardDetailServiceTest {
 
         // then
         BoardDetailDTO boardDetailDTO = result.getBoardDetailDTO();
-        List<CommentListDTO> commentListDTOS = result.getCommentListDTOS();
+        List<CommentList_OutDTO> commentListDTOS = result.getCommentListDTOS();
 
         assertEquals(1L, boardDetailDTO.getBoardId());
         assertEquals("테스트 제목", boardDetailDTO.getTitle());
@@ -57,13 +57,13 @@ public class BoardDetailServiceTest {
         assertNotNull(commentListDTOS);
         assertEquals(2, commentListDTOS.size());
 
-        CommentListDTO firstComment = commentListDTOS.get(0);
+        CommentList_OutDTO firstComment = commentListDTOS.get(0);
         assertEquals(1L, firstComment.getCommentId());
         assertEquals(2L, firstComment.getUser().getUserId());
         assertEquals("테스트 유저 2", firstComment.getUser().getUsername());
         assertEquals("테스트 댓글 1", firstComment.getContent());
 
-        CommentListDTO secondComment = commentListDTOS.get(1);
+        CommentList_OutDTO secondComment = commentListDTOS.get(1);
         assertEquals(2L, secondComment.getCommentId());
         assertEquals(3L, secondComment.getUser().getUserId());
         assertEquals("테스트 유저 3", secondComment.getUser().getUsername());

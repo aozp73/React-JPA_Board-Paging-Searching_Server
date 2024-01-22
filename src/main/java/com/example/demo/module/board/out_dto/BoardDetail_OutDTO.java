@@ -1,7 +1,7 @@
 package com.example.demo.module.board.out_dto;
 
-import com.example.demo.module.comment.out_dto.CommentListDTO;
 import com.example.demo.module.comment.out_dto.CommentListFlatDTO;
+import com.example.demo.module.comment.out_dto.CommentList_OutDTO;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 public class BoardDetail_OutDTO {
 
     BoardDetailDTO boardDetailDTO;
-    List<CommentListDTO> commentListDTOS = new ArrayList<>();
+    List<CommentList_OutDTO> commentListDTOS = new ArrayList<>();
 
     public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO, List<CommentListFlatDTO> commentListFlatDTOS) {
         this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO);
         this.commentListDTOS = commentListFlatDTOS.stream()
-                .map(CommentListDTO::new)
+                .map(CommentList_OutDTO::new)
                 .collect(Collectors.toList());
     }
 

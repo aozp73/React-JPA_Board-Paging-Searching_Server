@@ -7,7 +7,7 @@ import com.example.demo.module.board.BoardController;
 import com.example.demo.module.board.BoardService;
 import com.example.demo.module.board.out_dto.BoardDetailDTO;
 import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
-import com.example.demo.module.comment.out_dto.CommentListDTO;
+import com.example.demo.module.comment.out_dto.CommentList_OutDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,21 +92,21 @@ public class BoardDetailControllerTest {
                 .user(new BoardDetailDTO.User(1L, "테스트 유저 1"))
                 .build();
 
-        CommentListDTO commentListDTO1 = CommentListDTO.builder()
+        CommentList_OutDTO commentListDTO1 = CommentList_OutDTO.builder()
                 .commentId(1L)
                 .content("테스트 댓글 1")
                 .createdAt("2024.03.13 11:13:41")
                 .editable(null)
-                .user(new CommentListDTO.User(2L, "테스트 유저 2"))
+                .user(new CommentList_OutDTO.User(2L, "테스트 유저 2"))
                 .build();
-        CommentListDTO commentListDTO2 = CommentListDTO.builder()
+        CommentList_OutDTO commentListDTO2 = CommentList_OutDTO.builder()
                 .commentId(2L)
                 .content("테스트 댓글 2")
                 .createdAt("2024.03.13 13:13:41")
                 .editable(null)
-                .user(new CommentListDTO.User(3L, "테스트 유저 3"))
+                .user(new CommentList_OutDTO.User(3L, "테스트 유저 3"))
                 .build();
-        List<CommentListDTO> commentListDTOS = new ArrayList<>();
+        List<CommentList_OutDTO> commentListDTOS = new ArrayList<>();
         commentListDTOS.add(commentListDTO1);
         commentListDTOS.add(commentListDTO2);
 
