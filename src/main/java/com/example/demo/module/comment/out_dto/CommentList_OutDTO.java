@@ -12,7 +12,7 @@ public class CommentList_OutDTO {
 
     private Long commentId;
     private String content;
-    private Boolean editable; // 댓글 작성, 수정, 삭제 - Ajax 부분 랜더링에 활용
+    private Boolean editable;
     private String createdAt;
 
     private User user = new User();
@@ -32,6 +32,8 @@ public class CommentList_OutDTO {
 
        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
        this.createdAt = commentListFlatDTO.getCreatedAt().format(dateFormat);
+
+       this.editable = false;
 
        this.user.userId = commentListFlatDTO.getUserId();
        this.user.username = commentListFlatDTO.getUsername();

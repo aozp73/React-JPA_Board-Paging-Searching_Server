@@ -1,5 +1,6 @@
 package com.example.demo.integration.board;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.in_dto.BoardSave_InDTO;
 import com.example.demo.module.user.enums.UserRole;
 import com.example.demo.util.DummyEntityHelper;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -26,9 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardSaveIntegrationTest {
+public class BoardSaveIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -56,7 +59,7 @@ public class BoardSaveIntegrationTest {
 
     @Test
     @DisplayName("게시글 등록 성공")
-    public void save_SuccessTest() throws Exception {
+    public void save_success() throws Exception {
         // given
         BoardSave_InDTO boardSaveInDTO = make_BoardSave_InDTO();
         String content = new ObjectMapper().writeValueAsString(boardSaveInDTO);
@@ -87,12 +90,13 @@ public class BoardSaveIntegrationTest {
 
                 .andExpect(jsonPath("$.data.commentListDTOS").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 
     @Test
     @DisplayName("게시글 등록 실패 - title / content 유효성")
-    public void save_titleContentValid_FailTest() throws Exception {
+    public void save_fail_validTitleContent() throws Exception {
         // given
         BoardSave_InDTO boardSaveInDTO = BoardSave_InDTO.builder()
                 .title("")
@@ -113,8 +117,8 @@ public class BoardSaveIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("입력 값 확인"))
                 .andExpect(jsonPath("$.data.title").value("제목을 입력해주세요."))
                 .andExpect(jsonPath("$.data.content").value("내용을 입력해주세요."))
-
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     private BoardSave_InDTO make_BoardSave_InDTO() {

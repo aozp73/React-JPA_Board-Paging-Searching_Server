@@ -1,5 +1,6 @@
 package com.example.demo.service.board;
 
+import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.module.board.BoardRepository;
 import com.example.demo.module.board.BoardService;
 import com.example.demo.module.board.out_dto.*;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +41,7 @@ public class BoardDetailServiceTest {
         when(commentRepository.findAllWithCommentForDetail(boardId)).thenReturn(make_CommentListFlatDTOS());
 
         // when
-        BoardDetail_OutDTO result = boardService.findDetailById(boardId);
+        BoardDetail_OutDTO result = boardService.findDetailById(boardId, any(MyUserDetails.class));
 
 
         // then

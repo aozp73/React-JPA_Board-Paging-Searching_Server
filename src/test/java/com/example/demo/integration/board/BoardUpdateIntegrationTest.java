@@ -1,5 +1,6 @@
 package com.example.demo.integration.board;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.in_dto.BoardUpdate_InDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -27,9 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardUpdateIntegrationTest {
+public class BoardUpdateIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -65,7 +68,7 @@ public class BoardUpdateIntegrationTest {
 
     @Test
     @DisplayName("게시글 수정 성공")
-    public void update_SuccessTest() throws Exception {
+    public void update_success() throws Exception {
         // given
         BoardUpdate_InDTO boardUpdateInDTO = make_BoardUpdate_InDTO();
         String content = new ObjectMapper().writeValueAsString(boardUpdateInDTO);
@@ -93,11 +96,12 @@ public class BoardUpdateIntegrationTest {
 
                 .andExpect(jsonPath("$.data.commentListDTOS").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("게시글 수정 실패 - 다른 작성자의 글")
-    public void update_NotMatchWriter_FailTest() throws Exception {
+    public void update_fail_notMatchWriter() throws Exception {
         // given
         BoardUpdate_InDTO boardUpdateInDTO = BoardUpdate_InDTO.builder().id(2L).title("수정 제목1").content("수정 제목2").build();
         String content = new ObjectMapper().writeValueAsString(boardUpdateInDTO);
@@ -115,6 +119,7 @@ public class BoardUpdateIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("unAuthorized"))
                 .andExpect(jsonPath("$.data").value("작성자만 수정할 수 있습니다."))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 

@@ -2,9 +2,16 @@ ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
 
-:userjoin: user-join-integration-test
-:userlogin: user-login-integration-test
-:userlogout: user-logout-integration-test
+:user-join: user-join-integration-test
+:user-login: user-login-integration-test
+:user-logout: user-logout-integration-test
+
+:board-list: board-list-integration-test
+:board-detail: board-detail-integration-test
+:board-save: board-save-integration-test
+:board-delete: board-delete-integration-test
+:board-updateform: board-update-form-integration-test
+:board-update: board-update-integration-test
 
 = REST API
 :toc: left
@@ -15,90 +22,211 @@ endif::[]
 
 === 회원가입 (성공)
 ===== Request Example
-include::{snippets}/{userjoin}/join_success/http-request.adoc[]
+include::{snippets}/{user-join}/join_success/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userjoin}/join_success/http-response.adoc[]
+include::{snippets}/{user-join}/join_success/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userjoin}/join_success/curl-request.adoc[]
+include::{snippets}/{user-join}/join_success/curl-request.adoc[]
 
 === 회원가입 (실패 - password 자릿수)
 ===== Request Example
-include::{snippets}/{userjoin}/join_fail_valid-password/http-request.adoc[]
+include::{snippets}/{user-join}/join_fail_valid-password/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userjoin}/join_fail_valid-password/http-response.adoc[]
+include::{snippets}/{user-join}/join_fail_valid-password/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userjoin}/join_fail_valid-password/curl-request.adoc[]
+include::{snippets}/{user-join}/join_fail_valid-password/curl-request.adoc[]
 
-=== 회원가입 (실패 - username,password 자릿 수)
+=== 회원가입 (실패 - username,password 자릿수)
 ===== Request Example
-include::{snippets}/{userjoin}/join_fail_valid-password-username/http-request.adoc[]
+include::{snippets}/{user-join}/join_fail_valid-password-username/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userjoin}/join_fail_valid-password-username/http-response.adoc[]
+include::{snippets}/{user-join}/join_fail_valid-password-username/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userjoin}/join_fail_valid-password-username/curl-request.adoc[]
+include::{snippets}/{user-join}/join_fail_valid-password-username/curl-request.adoc[]
 
 === 회원가입 (실패 - 공백)
 ===== Request Example
-include::{snippets}/{userjoin}/join_fail_blank/http-request.adoc[]
+include::{snippets}/{user-join}/join_fail_blank/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userjoin}/join_fail_blank/http-response.adoc[]
+include::{snippets}/{user-join}/join_fail_blank/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userjoin}/join_fail_blank/curl-request.adoc[]
+include::{snippets}/{user-join}/join_fail_blank/curl-request.adoc[]
 
-=== 이메일 체크 (성공 - true)
+=== 회원가입 (이메일 체크 성공 - true)
 ===== Request Example
-include::{snippets}/{userjoin}/email-check_success/http-request.adoc[]
+include::{snippets}/{user-join}/email-check_success/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userjoin}/email-check_success/http-response.adoc[]
+include::{snippets}/{user-join}/email-check_success/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userjoin}/email-check_success/curl-request.adoc[]
+include::{snippets}/{user-join}/email-check_success/curl-request.adoc[]
 
-=== 이메일 체크 (실패 - false)
+=== 회원가입 (이메일 체크 실패 - false)
 ===== Request Example
-include::{snippets}/{userjoin}/email-check_fail/http-request.adoc[]
+include::{snippets}/{user-join}/email-check_fail/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userjoin}/email-check_fail/http-response.adoc[]
+include::{snippets}/{user-join}/email-check_fail/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userjoin}/email-check_fail/curl-request.adoc[]
+include::{snippets}/{user-join}/email-check_fail/curl-request.adoc[]
 
 === 로그인 (성공)
 ===== Request Example
-include::{snippets}/{userlogin}/login_success/http-request.adoc[]
+include::{snippets}/{user-login}/login_success/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userlogin}/login_success/http-response.adoc[]
+include::{snippets}/{user-login}/login_success/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userlogin}/login_success/curl-request.adoc[]
+include::{snippets}/{user-login}/login_success/curl-request.adoc[]
 
 === 로그인 (실패 - 존재하지 않는 이메일)
 ===== Request Example
-include::{snippets}/{userlogin}/login_fail_not-exist-email/http-request.adoc[]
+include::{snippets}/{user-login}/login_fail_not-exist-email/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userlogin}/login_fail_not-exist-email/http-response.adoc[]
+include::{snippets}/{user-login}/login_fail_not-exist-email/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userlogin}/login_fail_not-exist-email/curl-request.adoc[]
+include::{snippets}/{user-login}/login_fail_not-exist-email/curl-request.adoc[]
 
 === 로그인 (실패 - 패스워드 불일치)
 ===== Request Example
-include::{snippets}/{userlogin}/login_fail_valid-password/http-request.adoc[]
+include::{snippets}/{user-login}/login_fail_valid-password/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userlogin}/login_fail_valid-password/http-response.adoc[]
+include::{snippets}/{user-login}/login_fail_valid-password/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userlogin}/login_fail_valid-password/curl-request.adoc[]
+include::{snippets}/{user-login}/login_fail_valid-password/curl-request.adoc[]
 
 === 로그아웃 (성공)
 ===== Request Example
-include::{snippets}/{userlogout}/logout_success/http-request.adoc[]
+include::{snippets}/{user-logout}/logout_success/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userlogout}/logout_success/http-response.adoc[]
+include::{snippets}/{user-logout}/logout_success/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userlogout}/logout_success/curl-request.adoc[]
+include::{snippets}/{user-logout}/logout_success/curl-request.adoc[]
 
 === 로그아웃 (실패 - Redis에 없는 refreshToken)
 ===== Request Example
-include::{snippets}/{userlogout}/logout_fail_wrong-token/http-request.adoc[]
+include::{snippets}/{user-logout}/logout_fail_wrong-token/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{userlogout}/logout_fail_wrong-token/http-response.adoc[]
+include::{snippets}/{user-logout}/logout_fail_wrong-token/http-response.adoc[]
 ===== Curl
-include::{snippets}/{userlogout}/logout_fail_wrong-token/curl-request.adoc[]
+include::{snippets}/{user-logout}/logout_fail_wrong-token/curl-request.adoc[]
 
 
+== Board
+
+=== 게시글 목록 조회 (성공 - 첫번째 페이지)
+===== Request Example
+include::{snippets}/{board-list}/list_success_first-page/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-list}/list_success_first-page/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-list}/list_success_first-page/curl-request.adoc[]
+
+=== 게시글 목록 조회 (성공 - 두번째 페이지)
+===== Request Example
+include::{snippets}/{board-list}/list_success_second-page/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-list}/list_success_second-page/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-list}/list_success_second-page/curl-request.adoc[]
+
+=== 게시글 목록 조회 (성공 - 글쓴이 검색)
+===== Request Example
+include::{snippets}/{board-list}/list_success_search-by-author/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-list}/list_success_search-by-author/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-list}/list_success_search-by-author/curl-request.adoc[]
+
+=== 게시글 상세 조회 (성공)
+===== Request Example
+include::{snippets}/{board-detail}/detail_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-detail}/detail_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-detail}/detail_success/curl-request.adoc[]
+
+=== 게시글 상세 조회 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{board-detail}/detail_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-detail}/detail_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-detail}/detail_fail_not-exist-board/curl-request.adoc[]
+
+=== 게시글 상세 조회 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{board-detail}/detail_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-detail}/detail_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-detail}/detail_fail_not-exist-board/curl-request.adoc[]
+
+=== 게시글 등록 (성공)
+===== Request Example
+include::{snippets}/{board-save}/save_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-save}/save_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-save}/save_success/curl-request.adoc[]
+
+=== 게시글 등록 (실패 - title, content 공백)
+===== Request Example
+include::{snippets}/{board-save}/save_fail_valid-title-content/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-save}/save_fail_valid-title-content/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-save}/save_fail_valid-title-content/curl-request.adoc[]
+
+=== 게시글 삭제 (성공)
+===== Request Example
+include::{snippets}/{board-delete}/delete_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-delete}/delete_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-delete}/delete_success/curl-request.adoc[]
+
+=== 게시글 삭제 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{board-delete}/delete_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-delete}/delete_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-delete}/delete_fail_not-exist-board/curl-request.adoc[]
+
+=== 게시글 수정 페이지 (성공)
+===== Request Example
+include::{snippets}/{board-updateform}/update-form_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-updateform}/update-form_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-updateform}/update-form_success/curl-request.adoc[]
+
+=== 게시글 수정 페이지 (실패 - 다른 작성자의 게시글)
+===== Request Example
+include::{snippets}/{board-updateform}/update-form_fail_not-match-writer/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-updateform}/update-form_fail_not-match-writer/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-updateform}/update-form_fail_not-match-writer/curl-request.adoc[]
+
+=== 게시글 수정 페이지 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{board-updateform}/update-form_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-updateform}/update-form_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-updateform}/update-form_fail_not-exist-board/curl-request.adoc[]
+
+=== 게시글 수정 (성공)
+===== Request Example
+include::{snippets}/{board-update}/update_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-update}/update_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-update}/update_success/curl-request.adoc[]
+
+=== 게시글 수정 (실패 - 다른 작성자의 게시글)
+===== Request Example
+include::{snippets}/{board-update}/update_fail_not-match-writer/http-request.adoc[]
+===== Response Example
+include::{snippets}/{board-update}/update_fail_not-match-writer/http-response.adoc[]
+===== Curl
+include::{snippets}/{board-update}/update_fail_not-match-writer/curl-request.adoc[]

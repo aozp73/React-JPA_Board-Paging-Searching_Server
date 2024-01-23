@@ -1,5 +1,6 @@
 package com.example.demo.integration.board;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -24,9 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardListIntegrationTest {
+public class BoardListIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -65,7 +68,7 @@ public class BoardListIntegrationTest {
 
     @Test
     @DisplayName("게시글 목록조회 성공 - 첫 요청")
-    public void list_firstPage_SuccessTest() throws Exception {
+    public void list_success_firstPage() throws Exception {
         // given
 
         // when
@@ -96,13 +99,14 @@ public class BoardListIntegrationTest {
                 .andExpect(jsonPath("$.data.pageInfo.startPage").value(1))
                 .andExpect(jsonPath("$.data.pageInfo.endPage").value(2))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("게시글 목록조회 성공 - 두번째 페이지")
-    public void list_secondPage_SuccessTest() throws Exception {
+    public void list_success_secondPage() throws Exception {
         // given
-        String param = "?searchType=title&searchKeyword=제목&page=1";
+        String param = "?page=1";
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/api/board" + param)
@@ -132,11 +136,12 @@ public class BoardListIntegrationTest {
                 .andExpect(jsonPath("$.data.pageInfo.startPage").value(1))
                 .andExpect(jsonPath("$.data.pageInfo.endPage").value(2))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("게시글 목록조회 성공 - 글쓴이 검색")
-    public void list_searchByAuthor_SuccessTest() throws Exception {
+    public void list_success_searchByAuthor() throws Exception {
         // given
         String param = "?searchType=author&searchKeyword=user1&page=0";
 
@@ -168,5 +173,6 @@ public class BoardListIntegrationTest {
                 .andExpect(jsonPath("$.data.pageInfo.startPage").value(1))
                 .andExpect(jsonPath("$.data.pageInfo.endPage").value(1))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

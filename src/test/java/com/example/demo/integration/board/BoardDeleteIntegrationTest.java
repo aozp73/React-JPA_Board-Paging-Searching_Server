@@ -1,5 +1,6 @@
 package com.example.demo.integration.board;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,16 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardDeleteIntegrationTest {
+public class BoardDeleteIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -70,7 +71,7 @@ public class BoardDeleteIntegrationTest {
 
     @Test
     @DisplayName("게시글 삭제 성공")
-    public void delete_SuccessTest() throws Exception {
+    public void delete_success() throws Exception {
         // given
         Long boardId = 1L;
 
@@ -84,11 +85,12 @@ public class BoardDeleteIntegrationTest {
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.msg").value("성공"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("게시글 삭제 실패 - 존재하지 않는 게시글")
-    public void delete_notExistBoard_FailTest() throws Exception {
+    public void delete_fail_notExistBoard() throws Exception {
         // given
         Long boardId = 2L;
 
@@ -103,5 +105,6 @@ public class BoardDeleteIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("notFound"))
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

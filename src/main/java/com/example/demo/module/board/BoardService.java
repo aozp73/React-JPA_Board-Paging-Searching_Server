@@ -1,5 +1,6 @@
 package com.example.demo.module.board;
 
+import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.exception.statuscode.*;
 import com.example.demo.module.board.in_dto.BoardListSearch_InDTO;
 import com.example.demo.module.board.in_dto.BoardSave_InDTO;
@@ -56,9 +57,9 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardDetail_OutDTO findDetailById(Long boardId) {
-        log.debug("게시글 상세 페이지 - GET, Service 2");
-        BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
+    public BoardDetail_OutDTO findDetailById(Long boardId, MyUserDetails myUserDetails) {
+        log.debug("게시글 상세 페이지 - GET, Service 2 = {}", myUserDetails);
+        BoardDetailFlatDTO boardDetailDTO;
         List<CommentListFlatDTO> boardDetailCommentDTOS = new ArrayList<>();
 
         try {
@@ -72,7 +73,14 @@ public class BoardService {
             throw new Exception500("게시글 댓글 조회에 실패하였습니다.");
         }
 
-        return new BoardDetail_OutDTO(boardDetailDTO, boardDetailCommentDTOS);
+        BoardDetail_OutDTO boardDetailOutDTO;
+        if (myUserDetails == null) {
+            boardDetailOutDTO = new BoardDetail_OutDTO(boardDetailDTO, boardDetailCommentDTOS);
+        } else {
+            boardDetailOutDTO = new BoardDetail_OutDTO(boardDetailDTO, boardDetailCommentDTOS, myUserDetails.getUser().getId());
+        }
+
+        return boardDetailOutDTO;
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.example.demo.integration.board;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
 import com.example.demo.util.DummyEntityHelper;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,9 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardUpdateFormIntegrationTest {
+public class BoardUpdateFormIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -56,7 +59,7 @@ public class BoardUpdateFormIntegrationTest {
 
     @Test
     @DisplayName("게시글 수정 페이지 응답 성공")
-    public void updateForm_SuccessTest() throws Exception {
+    public void updateForm_success() throws Exception {
         // given
         Long boardId = 1L;
 
@@ -75,11 +78,12 @@ public class BoardUpdateFormIntegrationTest {
                 .andExpect(jsonPath("$.data.title").value("제목1"))
                 .andExpect(jsonPath("$.data.content").value("내용1"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("게시글 수정 페이지 응답 실패 - 다른 작성자의 글")
-    public void updateForm_NotMatchWriter_FailTest() throws Exception {
+    public void updateForm_fail_notMatchWriter() throws Exception {
         // given
         Long boardId = 2L;
 
@@ -94,11 +98,12 @@ public class BoardUpdateFormIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("unAuthorized"))
                 .andExpect(jsonPath("$.data").value("작성자만 수정할 수 있습니다."))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("게시글 수정 페이지 응답 실패 - 존재하지 않는 게시글 요청")
-    public void updateForm_NotExistBoard_FailTest() throws Exception {
+    public void updateForm_fail_notExistBoard() throws Exception {
         // given
         Long boardId = 3L;
 
@@ -113,6 +118,7 @@ public class BoardUpdateFormIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("notFound"))
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 }

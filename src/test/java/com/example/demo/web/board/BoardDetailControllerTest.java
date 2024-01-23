@@ -3,6 +3,7 @@ package com.example.demo.web.board;
 import com.example.demo.config.security.MyAuthenticationManagerConfig;
 import com.example.demo.config.security.MySecurityConfig;
 import com.example.demo.config.security.jwt.MyJwtProvider;
+import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.module.board.BoardController;
 import com.example.demo.module.board.BoardService;
 import com.example.demo.module.board.out_dto.BoardDetailDTO;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -42,8 +44,9 @@ public class BoardDetailControllerTest {
     @DisplayName("게시글 상세조회 성공")
     public void detail_SuccessTest() throws Exception {
         // given
+        SecurityContextHolder.clearContext();
         Long boardId = 1L;
-        when(boardService.findDetailById(anyLong())).thenReturn(make_BoardDetail_OutDTO());
+        when(boardService.findDetailById(anyLong(), isNull())).thenReturn(make_BoardDetail_OutDTO());
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/api/board/" + boardId)
@@ -78,7 +81,7 @@ public class BoardDetailControllerTest {
                 .andDo(MockMvcResultHandlers.print());
 
         verify(boardService).viewsCount(anyLong());
-        verify(boardService).findDetailById(anyLong());
+        verify(boardService).findDetailById(anyLong(), isNull());
     }
 
     private BoardDetail_OutDTO make_BoardDetail_OutDTO() {

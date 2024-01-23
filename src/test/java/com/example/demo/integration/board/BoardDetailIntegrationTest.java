@@ -1,5 +1,6 @@
 package com.example.demo.integration.board;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,9 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class BoardDetailIntegrationTest {
+public class BoardDetailIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -58,7 +61,7 @@ public class BoardDetailIntegrationTest {
 
     @Test
     @DisplayName("게시글 상세조회 성공")
-    public void detail_SuccessTest() throws Exception {
+    public void detail_success() throws Exception {
         // given
         Long boardId = 1L;
 
@@ -83,21 +86,24 @@ public class BoardDetailIntegrationTest {
 
                 .andExpect(jsonPath("$.data.commentListDTOS[0].commentId").value(1L))
                 .andExpect(jsonPath("$.data.commentListDTOS[0].content").value("댓글1"))
+                .andExpect(jsonPath("$.data.commentListDTOS[0].editable").value(false))
                 .andExpect(jsonPath("$.data.commentListDTOS[0].user.userId").value(2L))
                 .andExpect(jsonPath("$.data.commentListDTOS[0].user.username").value("user2"))
                 .andExpect(jsonPath("$.data.commentListDTOS[0].createdAt").value(DummyEntityHelper.boardDetailTime))
 
                 .andExpect(jsonPath("$.data.commentListDTOS[1].commentId").value(2L))
                 .andExpect(jsonPath("$.data.commentListDTOS[1].content").value("댓글2"))
+                .andExpect(jsonPath("$.data.commentListDTOS[1].editable").value(false))
                 .andExpect(jsonPath("$.data.commentListDTOS[1].user.userId").value(3L))
                 .andExpect(jsonPath("$.data.commentListDTOS[1].user.username").value("user3"))
                 .andExpect(jsonPath("$.data.commentListDTOS[1].createdAt").value(DummyEntityHelper.boardDetailTime))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
-    @DisplayName("게시글 상세조회 실패 - 없는 게시글")
-    public void detail_notExixtBoardId_FailTest() throws Exception {
+    @DisplayName("게시글 상세조회 실패 - 존재하지 않는 게시글")
+    public void detail_fail_notExistBoard() throws Exception {
         // given
         Long boardId = 2L;
 
@@ -110,5 +116,6 @@ public class BoardDetailIntegrationTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

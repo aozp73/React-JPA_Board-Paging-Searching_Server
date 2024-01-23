@@ -16,13 +16,19 @@ public class BoardDetail_OutDTO {
 
     BoardDetailDTO boardDetailDTO;
 
-    @Builder.Default
     List<CommentList_OutDTO> commentListDTOS = new ArrayList<>();
 
     public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO, List<CommentListFlatDTO> commentListFlatDTOS) {
         this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO);
         this.commentListDTOS = commentListFlatDTOS.stream()
                 .map(CommentList_OutDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO, List<CommentListFlatDTO> commentListFlatDTOS, Long userId) {
+        this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO);
+        this.commentListDTOS = commentListFlatDTOS.stream()
+                .map(commentListFlatDTO -> new CommentList_OutDTO(commentListFlatDTO, userId))
                 .collect(Collectors.toList());
     }
 

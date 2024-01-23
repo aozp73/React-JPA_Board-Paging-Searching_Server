@@ -34,12 +34,13 @@ public class BoardController {
     }
 
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<?> detail(@PathVariable Long boardId) {
+    public ResponseEntity<?> detail(@PathVariable Long boardId,
+                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 상세 - GET, Controller");
 
         boardService.viewsCount(boardId);
 
-        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findDetailById(boardId)));
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findDetailById(boardId, myUserDetails)));
     }
 
     @PostMapping("/auth/board")
