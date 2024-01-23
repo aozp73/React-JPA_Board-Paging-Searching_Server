@@ -1,5 +1,6 @@
 package com.example.demo.integration.comment;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.comment.in_dto.CommentSave_InDTO;
 import com.example.demo.module.user.User;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -28,9 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class CommentSaveIntegrationTest {
+public class CommentSaveIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -70,7 +73,7 @@ public class CommentSaveIntegrationTest {
 
     @Test
     @DisplayName("댓글 저장 성공")
-    public void save_SuccessTest() throws Exception {
+    public void save_success() throws Exception {
         // given
         CommentSave_InDTO commentSaveInDTO = CommentSave_InDTO.builder()
                 .boardId(1L)
@@ -109,12 +112,15 @@ public class CommentSaveIntegrationTest {
                 .andExpect(jsonPath("$.data[2].editable").value(true))
                 .andExpect(jsonPath("$.data[2].user.userId").value(1))
                 .andExpect(jsonPath("$.data[2].user.username").value("user1"))
+
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
-    @DisplayName("댓글 저장 실패 - 댓글 내용 Blank")
-    public void save_contentBlank_FailTest() throws Exception {
+    @DisplayName("댓글 저장 실패 - 댓글 내용 공백")
+    public void save_fail_validContent() throws Exception {
         // given
         CommentSave_InDTO commentSaveInDTO = CommentSave_InDTO.builder()
                 .boardId(1L)
@@ -134,12 +140,15 @@ public class CommentSaveIntegrationTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.msg").value("입력 값 확인"))
                 .andExpect(jsonPath("$.data.content").value("댓글 내용을 입력해주세요."))
+
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("댓글 저장 실패 - 존재하지 않는 게시글")
-    public void save_notExistBoard_FailTest() throws Exception {
+    public void save_fail_notExistBoard() throws Exception {
         // given
         CommentSave_InDTO commentSaveInDTO = CommentSave_InDTO.builder()
                 .boardId(2L)
@@ -159,6 +168,9 @@ public class CommentSaveIntegrationTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.msg").value("notFound"))
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
+
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.integration.comment;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.comment.in_dto.CommentUpdate_InDTO;
 import com.example.demo.module.user.User;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -28,9 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class CommentUpdateIntegrationTest {
+public class CommentUpdateIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -72,7 +75,7 @@ public class CommentUpdateIntegrationTest {
 
     @Test
     @DisplayName("댓글 수정 성공")
-    public void update_SuccessTest() throws Exception {
+    public void update_success() throws Exception {
         // given
         Long boardId = 1L;
         Long commentId = 1L;
@@ -118,11 +121,13 @@ public class CommentUpdateIntegrationTest {
                 .andExpect(jsonPath("$.data[2].user.username").value("user2"))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("댓글 수정 실패 - 존지하지 않는 게시글")
-    public void update_NotExistBoard_FailTest() throws Exception {
+    public void update_fail_notExistBoard() throws Exception {
         // given
         Long boardId = 2L;
         Long commentId = 1L;
@@ -148,11 +153,13 @@ public class CommentUpdateIntegrationTest {
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("댓글 수정 실패 - 존지하지 않는 댓글")
-    public void update_NotExistComment_FailTest() throws Exception {
+    public void update_fail_notExistComment() throws Exception {
         // given
         Long boardId = 1L;
         Long commentId = 4L;
@@ -178,12 +185,14 @@ public class CommentUpdateIntegrationTest {
                 .andExpect(jsonPath("$.data").value("댓글이 존재하지 않습니다."))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 
     @Test
     @DisplayName("댓글 수정 실패 - 다른 작성자의 댓글")
-    public void update_NotMatchWriter_FailTest() throws Exception {
+    public void update_fail_notMatchWriter() throws Exception {
         // given
         Long boardId = 1L;
         Long commentId = 3L;
@@ -209,6 +218,8 @@ public class CommentUpdateIntegrationTest {
                 .andExpect(jsonPath("$.data").value("댓글 작성자만 수정할 수 있습니다."))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 }

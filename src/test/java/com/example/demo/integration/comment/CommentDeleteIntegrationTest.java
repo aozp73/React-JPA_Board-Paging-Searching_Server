@@ -1,5 +1,6 @@
 package com.example.demo.integration.comment;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.board.Board;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.enums.UserRole;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -24,9 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class CommentDeleteIntegrationTest {
+public class CommentDeleteIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -62,7 +65,7 @@ public class CommentDeleteIntegrationTest {
 
     @Test
     @DisplayName("댓글 삭제 성공")
-    public void delete_SuccessTest() throws Exception {
+    public void delete_success() throws Exception {
         // given
         Long boardId = 1L;
         Long commentId = 1L;
@@ -94,11 +97,13 @@ public class CommentDeleteIntegrationTest {
                 .andExpect(jsonPath("$.data[1].user.username").value("user2"))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("댓글 삭제 실패 - 존재하지 않는 게시글")
-    public void delete_notExistBoard_FailTest() throws Exception {
+    public void delete_fail_notExistBoard() throws Exception {
         // given
         Long boardId = 2L;
         Long commentId = 1L;
@@ -115,11 +120,13 @@ public class CommentDeleteIntegrationTest {
                 .andExpect(jsonPath("$.data").value("게시물이 존재하지 않습니다."))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("댓글 삭제 실패 - 존재하지 않는 댓글")
-    public void delete_notExistComment_FailTest() throws Exception {
+    public void delete_fail_notExistComment() throws Exception {
         // given
         Long boardId = 1L;
         Long commentId = 4L;
@@ -136,11 +143,13 @@ public class CommentDeleteIntegrationTest {
                 .andExpect(jsonPath("$.data").value("댓글이 존재하지 않습니다."))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
     @DisplayName("댓글 삭제 실패 - 다른 작성자의 댓글")
-    public void delete_notMatchWriter_FailTest() throws Exception {
+    public void delete_fail_notMatchWriter() throws Exception {
         // given
         Long boardId = 1L;
         Long commentId = 3L;
@@ -157,5 +166,7 @@ public class CommentDeleteIntegrationTest {
                 .andExpect(jsonPath("$.data").value("댓글 작성자만 삭제할 수 있습니다."))
 
                 .andDo(MockMvcResultHandlers.print());
+
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

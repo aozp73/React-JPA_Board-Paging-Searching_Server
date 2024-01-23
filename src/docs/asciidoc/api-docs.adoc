@@ -13,6 +13,10 @@ endif::[]
 :board-updateform: board-update-form-integration-test
 :board-update: board-update-integration-test
 
+:comment-save: comment-save-integration-test
+:comment-delete: comment-delete-integration-test
+:comment-update: comment-update-integration-test
+
 = REST API
 :toc: left
 :toclevels: 2
@@ -230,3 +234,94 @@ include::{snippets}/{board-update}/update_fail_not-match-writer/http-request.ado
 include::{snippets}/{board-update}/update_fail_not-match-writer/http-response.adoc[]
 ===== Curl
 include::{snippets}/{board-update}/update_fail_not-match-writer/curl-request.adoc[]
+
+
+== Comment
+
+=== 댓글 저장 (성공)
+===== Request Example
+include::{snippets}/{comment-save}/save_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-save}/save_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-save}/save_success/curl-request.adoc[]
+
+=== 댓글 저장 (실패 - content 공백)
+===== Request Example
+include::{snippets}/{comment-save}/save_fail_valid-content/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-save}/save_fail_valid-content/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-save}/save_fail_valid-content/curl-request.adoc[]
+
+=== 댓글 저장 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{comment-save}/save_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-save}/save_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-save}/save_fail_not-exist-board/curl-request.adoc[]
+
+=== 댓글 삭제 (성공)
+===== Request Example
+include::{snippets}/{comment-delete}/delete_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-delete}/delete_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-delete}/delete_success/curl-request.adoc[]
+
+=== 댓글 삭제 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{comment-delete}/delete_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-delete}/delete_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-delete}/delete_fail_not-exist-board/curl-request.adoc[]
+
+=== 댓글 삭제 (실패 - 존재하지 않는 댓글)
+===== Request Example
+include::{snippets}/{comment-delete}/delete_fail_not-exist-comment/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-delete}/delete_fail_not-exist-comment/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-delete}/delete_fail_not-exist-comment/curl-request.adoc[]
+
+=== 댓글 삭제 (실패 - 다른 작성자의 댓글)
+===== Request Example
+include::{snippets}/{comment-delete}/delete_fail_not-match-writer/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-delete}/delete_fail_not-match-writer/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-delete}/delete_fail_not-match-writer/curl-request.adoc[]
+
+=== 댓글 수정 (성공)
+===== Request Example
+include::{snippets}/{comment-update}/update_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-update}/update_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-update}/update_success/curl-request.adoc[]
+
+=== 댓글 수정 (실패 - 존재하지 않는 게시글)
+===== Request Example
+include::{snippets}/{comment-update}/update_fail_not-exist-board/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-update}/update_fail_not-exist-board/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-update}/update_fail_not-exist-board/curl-request.adoc[]
+
+=== 댓글 수정 (실패 - 존재하지 않는 댓글)
+===== Request Example
+include::{snippets}/{comment-update}/update_fail_not-exist-comment/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-update}/update_fail_not-exist-comment/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-update}/update_fail_not-exist-comment/curl-request.adoc[]
+
+=== 댓글 수정 (실패 - 다른 작성자의 댓글)
+===== Request Example
+include::{snippets}/{comment-update}/update_fail_not-match-writer/http-request.adoc[]
+===== Response Example
+include::{snippets}/{comment-update}/update_fail_not-match-writer/http-response.adoc[]
+===== Curl
+include::{snippets}/{comment-update}/update_fail_not-match-writer/curl-request.adoc[]
