@@ -448,6 +448,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_user">User</a>
 <ul class="sectlevel2">
 <li><a href="#_회원가입_성공">회원가입 (성공)</a></li>
+<li><a href="#_회원가입_실패_password_자릿수">회원가입 (실패 - password 자릿수)</a></li>
+<li><a href="#_회원가입_실패_usernamepassword_자릿_수">회원가입 (실패 - username,password 자릿 수)</a></li>
+<li><a href="#_회원가입_실패_공백">회원가입 (실패 - 공백)</a></li>
+<li><a href="#_이메일_체크_성공_true">이메일 체크 (성공 - true)</a></li>
+<li><a href="#_이메일_체크_실패_false">이메일 체크 (실패 - false)</a></li>
+<li><a href="#_로그인_성공">로그인 (성공)</a></li>
+<li><a href="#_로그인_실패_존재하지_않는_이메일">로그인 (실패 - 존재하지 않는 이메일)</a></li>
+<li><a href="#_로그인_실패_패스워드_불일치">로그인 (실패 - 패스워드 불일치)</a></li>
+<li><a href="#_로그아웃_성공">로그아웃 (성공)</a></li>
+<li><a href="#_로그아웃_실패_redis에_없는_refreshtoken">로그아웃 (실패 - Redis에 없는 refreshToken)</a></li>
 </ul>
 </li>
 </ul>
@@ -520,13 +530,607 @@ Content-Length: 61
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_회원가입_실패_password_자릿수">회원가입 (실패 - password 자릿수)</h3>
+<div class="sect4">
+<h5 id="_request_example_2">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /api/join HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 115
+Host: localhost:8080
+
+{
+  "email" : "abc@test.com",
+  "password" : "1234",
+  "passwordConfirmation" : "1234",
+  "username" : "123"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_2">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 144
+
+{
+  "status" : 400,
+  "msg" : "입력 값 확인",
+  "data" : {
+    "password" : "6글자 이상 20자 이내로 입력해주세요"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_2">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/join' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{
+  "email" : "abc@test.com",
+  "password" : "1234",
+  "passwordConfirmation" : "1234",
+  "username" : "123"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_회원가입_실패_usernamepassword_자릿_수">회원가입 (실패 - username,password 자릿 수)</h3>
+<div class="sect4">
+<h5 id="_request_example_3">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /api/join HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 119
+Host: localhost:8080
+
+{
+  "email" : "abc@test.com",
+  "password" : "1234",
+  "passwordConfirmation" : "1234",
+  "username" : "1234567"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_3">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 202
+
+{
+  "status" : 400,
+  "msg" : "입력 값 확인",
+  "data" : {
+    "password" : "6글자 이상 20자 이내로 입력해주세요",
+    "username" : "6글자 이내로 입력해주세요"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_3">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/join' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{
+  "email" : "abc@test.com",
+  "password" : "1234",
+  "passwordConfirmation" : "1234",
+  "username" : "1234567"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_회원가입_실패_공백">회원가입 (실패 - 공백)</h3>
+<div class="sect4">
+<h5 id="_request_example_4">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /api/join HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 92
+Host: localhost:8080
+
+{
+  "email" : "",
+  "password" : "",
+  "passwordConfirmation" : "",
+  "username" : ""
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_4">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 307
+
+{
+  "status" : 400,
+  "msg" : "입력 값 확인",
+  "data" : {
+    "passwordConfirmation" : "패스워드 확인을 입력해주세요",
+    "password" : "패스워드를 입력해주세요",
+    "email" : "이메일을 입력해주세요",
+    "username" : "아이디를 입력해주세요"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_4">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/join' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{
+  "email" : "",
+  "password" : "",
+  "passwordConfirmation" : "",
+  "username" : ""
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_이메일_체크_성공_true">이메일 체크 (성공 - true)</h3>
+<div class="sect4">
+<h5 id="_request_example_5">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /api/emailCheck?email=abc@test.com HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_5">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 61
+
+{
+  "status" : 200,
+  "msg" : "성공",
+  "data" : true
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_5">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/emailCheck?email=abc@test.com' -i -X GET \
+    -H 'Accept: application/json'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_이메일_체크_실패_false">이메일 체크 (실패 - false)</h3>
+<div class="sect4">
+<h5 id="_request_example_6">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /api/emailCheck?email=abc@test.com HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_6">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 62
+
+{
+  "status" : 200,
+  "msg" : "성공",
+  "data" : false
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_6">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/emailCheck?email=abc@test.com' -i -X GET \
+    -H 'Accept: application/json'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_로그인_성공">로그인 (성공)</h3>
+<div class="sect4">
+<h5 id="_request_example_7">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /api/login HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 59
+Host: localhost:8080
+
+{
+  "email" : "abc@naver.com",
+  "password" : "123456"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_7">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 589
+
+{
+  "status" : 200,
+  "msg" : "성공",
+  "data" : {
+    "accessToken" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAbmF2ZXIuY29tIiwidXNlcklkIjoxLCJ1c2VybmFtZSI6ImFiYyIsInJvbGUiOiJDT01NT04iLCJpYXQiOjE3MDYwMDcxMDcsImV4cCI6MTcwNjAxMDcwN30.Zg2fnVB3nv_NKUKIcspO4e1D0CfYO4RDLv0yJWVr-PU",
+    "refreshToken" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAbmF2ZXIuY29tIiwidXNlcklkIjoxLCJ1c2VybmFtZSI6ImFiYyIsInJvbGUiOiJDT01NT04iLCJpYXQiOjE3MDYwMDcxMDcsImV4cCI6MTcwNjYxMTkwN30.bb66ooN-nPcUwwrHEYbef-VTZTB0N_lgZ6zzZkfhpl8",
+    "userId" : 1,
+    "username" : "abc",
+    "email" : "abc@naver.com"
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_7">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/login' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{
+  "email" : "abc@naver.com",
+  "password" : "123456"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_로그인_실패_존재하지_않는_이메일">로그인 (실패 - 존재하지 않는 이메일)</h3>
+<div class="sect4">
+<h5 id="_request_example_8">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /api/login HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 61
+Host: localhost:8080
+
+{
+  "email" : "wrong@naver.com",
+  "password" : "123456"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_8">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 102
+
+{
+  "status" : 400,
+  "msg" : "badRequest",
+  "data" : "이메일을 다시 확인해주세요."
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_8">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/login' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{
+  "email" : "wrong@naver.com",
+  "password" : "123456"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_로그인_실패_패스워드_불일치">로그인 (실패 - 패스워드 불일치)</h3>
+<div class="sect4">
+<h5 id="_request_example_9">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /api/login HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Accept: application/json
+Content-Length: 60
+Host: localhost:8080
+
+{
+  "email" : "abc@naver.com",
+  "password" : "1111111"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_9">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 400 Bad Request
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 105
+
+{
+  "status" : 400,
+  "msg" : "badRequest",
+  "data" : "비밀번호를 다시 확인해주세요."
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_9">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/login' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -d '{
+  "email" : "abc@naver.com",
+  "password" : "1111111"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_로그아웃_성공">로그아웃 (성공)</h3>
+<div class="sect4">
+<h5 id="_request_example_10">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">DELETE /api/auth/logout HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3RVc2VyIiwicm9sZSI6IkNPTU1PTiIsImlhdCI6MTcwNjAwNzEwOCwiZXhwIjoxNzA2MDEwNzA4fQ.azMusXGKZAM_Hqt8VsTbvfzbRRKEX3ehl5-3CljHYxM
+Accept: application/json
+Content-Length: 36
+Host: localhost:8080
+
+{
+  "refreshToken" : "mockToken"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_10">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 61
+
+{
+  "status" : 200,
+  "msg" : "성공",
+  "data" : null
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_10">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/auth/logout' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3RVc2VyIiwicm9sZSI6IkNPTU1PTiIsImlhdCI6MTcwNjAwNzEwOCwiZXhwIjoxNzA2MDEwNzA4fQ.azMusXGKZAM_Hqt8VsTbvfzbRRKEX3ehl5-3CljHYxM' \
+    -H 'Accept: application/json' \
+    -d '{
+  "refreshToken" : "mockToken"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_로그아웃_실패_redis에_없는_refreshtoken">로그아웃 (실패 - Redis에 없는 refreshToken)</h3>
+<div class="sect4">
+<h5 id="_request_example_11">Request Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">DELETE /api/auth/logout HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3RVc2VyIiwicm9sZSI6IkNPTU1PTiIsImlhdCI6MTcwNjAwNzEwOCwiZXhwIjoxNzA2MDEwNzA4fQ.azMusXGKZAM_Hqt8VsTbvfzbRRKEX3ehl5-3CljHYxM
+Accept: application/json
+Content-Length: 37
+Host: localhost:8080
+
+{
+  "refreshToken" : "wrongToken"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_response_example_11">Response Example</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 401 Unauthorized
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json;charset=UTF-8
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 91
+
+{
+  "status" : 401,
+  "msg" : "unAuthorized",
+  "data" : "잘못된 접근입니다."
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_curl_11">Curl</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="bash" class="language-bash hljs">$ curl 'http://localhost:8080/api/auth/logout' -i -X DELETE \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwidXNlcklkIjoxLCJ1c2VybmFtZSI6InRlc3RVc2VyIiwicm9sZSI6IkNPTU1PTiIsImlhdCI6MTcwNjAwNzEwOCwiZXhwIjoxNzA2MDEwNzA4fQ.azMusXGKZAM_Hqt8VsTbvfzbRRKEX3ehl5-3CljHYxM' \
+    -H 'Accept: application/json' \
+    -d '{
+  "refreshToken" : "wrongToken"
+}'</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2024-01-22 21:23:50 +0900
+Last updated 2024-01-23 19:51:18 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

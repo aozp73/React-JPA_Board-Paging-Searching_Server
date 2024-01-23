@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
-@AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 public class UserJoinIntegrationTest extends AbstractIntegrationTest {
@@ -87,8 +87,8 @@ public class UserJoinIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("회원가입 실패 - password 자릿 수")
-    public void join_fail_valid_password() throws Exception {
+    @DisplayName("회원가입 실패 - password 자릿수")
+    public void join_fail_validPassword() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("abc@test.com")
@@ -111,13 +111,14 @@ public class UserJoinIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("입력 값 확인"))
                 .andExpect(jsonPath("$.data.password").value("6글자 이상 20자 이내로 입력해주세요"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
 
         assertFalse(userRepository.findByEmail("abc@test.com").isPresent());
     }
 
     @Test
     @DisplayName("회원가입 실패 - username,password 자릿 수")
-    public void join_fail_valid_password_username() throws Exception {
+    public void join_fail_validPasswordUsername() throws Exception {
         // given
         Join_InDTO joinInDTO = Join_InDTO.builder()
                 .email("abc@test.com")
@@ -141,6 +142,7 @@ public class UserJoinIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.data.password").value("6글자 이상 20자 이내로 입력해주세요"))
                 .andExpect(jsonPath("$.data.username").value("6글자 이내로 입력해주세요"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
 
         assertFalse(userRepository.findByEmail("abc@test.com").isPresent());
     }
@@ -173,10 +175,12 @@ public class UserJoinIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.data.passwordConfirmation").value("패스워드 확인을 입력해주세요"))
                 .andExpect(jsonPath("$.data.username").value("아이디를 입력해주세요"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+
     }
 
     @Test
-    @DisplayName("이메일 체크 통합 테스트 - 성공")
+    @DisplayName("이메일 체크 테스트 - 성공")
     public void emailCheck_success() throws Exception {
         // given
         String email = "abc@test.com";
@@ -192,6 +196,8 @@ public class UserJoinIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("성공"))
                 .andExpect(jsonPath("$.data").value(true))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+
     }
 
     @Test
@@ -222,5 +228,7 @@ public class UserJoinIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("성공"))
                 .andExpect(jsonPath("$.data").value(false))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+
     }
 }

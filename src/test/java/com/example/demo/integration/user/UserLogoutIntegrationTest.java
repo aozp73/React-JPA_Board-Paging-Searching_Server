@@ -1,5 +1,6 @@
 package com.example.demo.integration.user;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
@@ -8,27 +9,25 @@ import com.example.demo.util.TestSecurityHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 import redis.embedded.RedisServer;
 
-import javax.persistence.EntityManager;
-
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class UserLogoutIntegrationTest {
+public class UserLogoutIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
 
@@ -61,7 +60,7 @@ public class UserLogoutIntegrationTest {
 
     @Test
     @DisplayName("로그아웃 성공")
-    public void logout_SuccessTest() throws Exception {
+    public void logout_success() throws Exception {
         // given
         RefreshToken_inDTO mockRefreshTokenInDTO = RefreshToken_inDTO.builder()
                 .refreshToken("mockToken")
@@ -81,12 +80,12 @@ public class UserLogoutIntegrationTest {
         resultActions
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
-
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     @Test
-    @DisplayName("로그아웃 실패 - Redis에 없는 AccessToken")
-    public void findByRefreshToken_WrongToken_FailTest() throws Exception {
+    @DisplayName("로그아웃 실패 - Redis에 없는 refreshToken")
+    public void logout_fail_wrongToken() throws Exception {
         // given
         RefreshToken_inDTO mockRefreshTokenInDTO = RefreshToken_inDTO.builder()
                 .refreshToken("wrongToken")
@@ -109,6 +108,7 @@ public class UserLogoutIntegrationTest {
                 .andExpect(jsonPath("$.msg").value("unAuthorized"))
                 .andExpect(jsonPath("$.data").value("잘못된 접근입니다."))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     private void setUp_refreshToken(Long userId, String token) {

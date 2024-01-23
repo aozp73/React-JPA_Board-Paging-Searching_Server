@@ -1,15 +1,16 @@
 package com.example.demo.integration.user;
 
+import com.example.demo.AbstractIntegrationTest;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
 import com.example.demo.module.user.User;
-import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.enums.UserRole;
 import com.example.demo.module.user.in_dto.Login_InDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -32,9 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class UserLoginIntegrationTest {
+public class UserLoginIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private EntityManager em;
@@ -76,7 +78,7 @@ public class UserLoginIntegrationTest {
 
     @Test
     @DisplayName("로그인 성공")
-    public void login_SuccessTest() throws Exception {
+    public void login_success() throws Exception {
         // given
         Login_InDTO loginInDTO = Login_InDTO.builder()
                 .email("abc@naver.com")
@@ -98,6 +100,7 @@ public class UserLoginIntegrationTest {
                 .andExpect(jsonPath("$.data.username").value("abc"))
                 .andExpect(jsonPath("$.data.email").value("abc@naver.com"))
                 .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
 
             // redis 저장 Refresh 토큰 검증
             String jsonResponse = resultActions.andReturn().getResponse().getContentAsString();
@@ -108,6 +111,58 @@ public class UserLoginIntegrationTest {
             Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByRefreshToken(refreshToken);
             assertTrue(refreshTokenOpt.isPresent());
             assertEquals(refreshToken, refreshTokenOpt.get().getRefreshToken());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 존재하지 않는 이메일")
+    public void login_fail_notExistEmail() throws Exception {
+        // given
+        Login_InDTO loginInDTO = Login_InDTO.builder()
+                .email("wrong@naver.com")
+                .password("123456")
+                .build();
+        String content = new ObjectMapper().writeValueAsString(loginInDTO);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.msg").value("badRequest"))
+                .andExpect(jsonPath("$.data").value("이메일을 다시 확인해주세요."))
+                .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 패스워드 불일치")
+    public void login_fail_validPassword() throws Exception {
+        // given
+        Login_InDTO loginInDTO = Login_InDTO.builder()
+                .email("abc@naver.com")
+                .password("1111111")
+                .build();
+        String content = new ObjectMapper().writeValueAsString(loginInDTO);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content)
+                .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.msg").value("badRequest"))
+                .andExpect(jsonPath("$.data").value("비밀번호를 다시 확인해주세요."))
+                .andDo(MockMvcResultHandlers.print());
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 

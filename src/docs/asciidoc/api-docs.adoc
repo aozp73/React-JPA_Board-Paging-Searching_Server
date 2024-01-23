@@ -2,7 +2,9 @@ ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
 
-:user: user-join-integration-test
+:userjoin: user-join-integration-test
+:userlogin: user-login-integration-test
+:userlogout: user-logout-integration-test
 
 = REST API
 :toc: left
@@ -13,10 +15,90 @@ endif::[]
 
 === 회원가입 (성공)
 ===== Request Example
-include::{snippets}/{user}/join_success/http-request.adoc[]
-
+include::{snippets}/{userjoin}/join_success/http-request.adoc[]
 ===== Response Example
-include::{snippets}/{user}/join_success/http-response.adoc[]
-
+include::{snippets}/{userjoin}/join_success/http-response.adoc[]
 ===== Curl
-include::{snippets}/{user}/join_success/curl-request.adoc[]
+include::{snippets}/{userjoin}/join_success/curl-request.adoc[]
+
+=== 회원가입 (실패 - password 자릿수)
+===== Request Example
+include::{snippets}/{userjoin}/join_fail_valid-password/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userjoin}/join_fail_valid-password/http-response.adoc[]
+===== Curl
+include::{snippets}/{userjoin}/join_fail_valid-password/curl-request.adoc[]
+
+=== 회원가입 (실패 - username,password 자릿 수)
+===== Request Example
+include::{snippets}/{userjoin}/join_fail_valid-password-username/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userjoin}/join_fail_valid-password-username/http-response.adoc[]
+===== Curl
+include::{snippets}/{userjoin}/join_fail_valid-password-username/curl-request.adoc[]
+
+=== 회원가입 (실패 - 공백)
+===== Request Example
+include::{snippets}/{userjoin}/join_fail_blank/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userjoin}/join_fail_blank/http-response.adoc[]
+===== Curl
+include::{snippets}/{userjoin}/join_fail_blank/curl-request.adoc[]
+
+=== 이메일 체크 (성공 - true)
+===== Request Example
+include::{snippets}/{userjoin}/email-check_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userjoin}/email-check_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{userjoin}/email-check_success/curl-request.adoc[]
+
+=== 이메일 체크 (실패 - false)
+===== Request Example
+include::{snippets}/{userjoin}/email-check_fail/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userjoin}/email-check_fail/http-response.adoc[]
+===== Curl
+include::{snippets}/{userjoin}/email-check_fail/curl-request.adoc[]
+
+=== 로그인 (성공)
+===== Request Example
+include::{snippets}/{userlogin}/login_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userlogin}/login_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{userlogin}/login_success/curl-request.adoc[]
+
+=== 로그인 (실패 - 존재하지 않는 이메일)
+===== Request Example
+include::{snippets}/{userlogin}/login_fail_not-exist-email/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userlogin}/login_fail_not-exist-email/http-response.adoc[]
+===== Curl
+include::{snippets}/{userlogin}/login_fail_not-exist-email/curl-request.adoc[]
+
+=== 로그인 (실패 - 패스워드 불일치)
+===== Request Example
+include::{snippets}/{userlogin}/login_fail_valid-password/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userlogin}/login_fail_valid-password/http-response.adoc[]
+===== Curl
+include::{snippets}/{userlogin}/login_fail_valid-password/curl-request.adoc[]
+
+=== 로그아웃 (성공)
+===== Request Example
+include::{snippets}/{userlogout}/logout_success/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userlogout}/logout_success/http-response.adoc[]
+===== Curl
+include::{snippets}/{userlogout}/logout_success/curl-request.adoc[]
+
+=== 로그아웃 (실패 - Redis에 없는 refreshToken)
+===== Request Example
+include::{snippets}/{userlogout}/logout_fail_wrong-token/http-request.adoc[]
+===== Response Example
+include::{snippets}/{userlogout}/logout_fail_wrong-token/http-response.adoc[]
+===== Curl
+include::{snippets}/{userlogout}/logout_fail_wrong-token/curl-request.adoc[]
+
+
