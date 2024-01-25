@@ -1,5 +1,6 @@
 package com.example.demo.module.user;
 
+import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.exception.ResponseDTO;
 import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
@@ -8,10 +9,14 @@ import com.example.demo.module.user.in_dto.Login_InDTO;
 import com.example.demo.module.user.out_dto.Login_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -20,6 +25,7 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final MyJwtProvider myJwtProvider;
 
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody @Valid Join_InDTO joinInDTO) {
@@ -38,11 +44,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid Login_InDTO loginInDTO) {
+    public ResponseEntity<?> login(@RequestBody @Valid Login_InDTO loginInDTO, HttpServletResponse response) {
         log.debug(("로그인 요청 - POST, Controller"));
         Login_OutDTO loginOutDTO = userService.login(loginInDTO);
+        myJwtProvider.createCookieByRefreshToken(response, loginOutDTO.getRefreshToken());
 
-        return ResponseEntity.ok().body(new ResponseDTO<>().data(loginOutDTO));
+        return ResponseEntity.ok()
+                .body(new ResponseDTO<>().data(loginOutDTO));
     }
 
     @DeleteMapping("/auth/logout")

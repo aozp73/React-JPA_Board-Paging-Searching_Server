@@ -6,8 +6,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -53,6 +55,23 @@ public class MyJwtProvider {
                 .signWith(getSigningKey(secretKey))
                 .compact();
     }
+
+    /**
+     * 로그인 시, refreshToken Cookie 전송
+     */
+    public void createCookieByRefreshToken(HttpServletResponse response, String refreshToken) {
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+                .path("/") // 모든 곳에서 사용 허용
+                .sameSite("Strict") // CSRF 공격 방지
+                .httpOnly(true) // XSS 공격 방지
+                .secure(false) // HTTPS 적용 프로젝트 x
+                .maxAge(7 * 24 * 60 * 60) // 1주일 (refreshToken과 동일)
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
 
     /**
      * JWT 토큰 검증
