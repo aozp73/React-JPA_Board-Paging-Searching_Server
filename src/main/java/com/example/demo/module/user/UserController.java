@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -46,11 +47,14 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid Login_InDTO loginInDTO, HttpServletResponse response) {
         log.debug(("로그인 요청 - POST, Controller"));
+        // Redis 저장: RefreshToken (AccessToken 재발급 검증)
+        // 응답 데이터: AccessToken / userId (클라이언트 수정,삭제 렌더링) / username (Header 렌더링) / email
         Login_OutDTO loginOutDTO = userService.login(loginInDTO);
+
+        // Set-Cookie: RefreshToken
         myJwtProvider.createCookieByRefreshToken(response, loginOutDTO.getRefreshToken());
 
-        return ResponseEntity.ok()
-                .body(new ResponseDTO<>().data(loginOutDTO));
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(loginOutDTO));
     }
 
     @DeleteMapping("/auth/logout")

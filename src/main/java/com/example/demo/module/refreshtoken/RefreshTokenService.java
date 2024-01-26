@@ -17,6 +17,6 @@ public class RefreshTokenService {
         log.debug(("accessToken 재발급 - POST, Service (findRefreshToken)"));
 
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new Exception400("잘못된 RefreshToken 전송"));
+                .orElseThrow(() -> new Exception400("Server에 RefreshToken이 존재하지 않습니다. (재로그인 필요)"));
     }
 }
