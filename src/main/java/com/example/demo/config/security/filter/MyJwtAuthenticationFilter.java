@@ -45,6 +45,7 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             MySecurityUtil.handleExceptionResponse(response, "Token Exception: EXPIRED_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
 
+
         } catch (UnsupportedJwtException e) {
             MySecurityUtil.handleExceptionResponse(response, "Token Exception: UNSUPPORTED_TOKEN", HttpServletResponse.SC_BAD_REQUEST);
 
@@ -63,7 +64,6 @@ public class MyJwtAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer")){
             String[] arr = authorization.split(" ");
-            System.out.println("arr = " + arr[1]);
             return arr[1];
         }
         return null;
