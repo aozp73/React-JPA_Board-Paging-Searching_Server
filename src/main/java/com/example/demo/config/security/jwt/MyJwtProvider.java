@@ -59,7 +59,7 @@ public class MyJwtProvider {
     }
 
     /**
-     * 로그인 시, refreshToken Cookie 전송
+     * 로그인, refreshToken Cookie 전송
      */
     public void createCookieByRefreshToken(HttpServletResponse response, String refreshToken) {
 
@@ -69,6 +69,22 @@ public class MyJwtProvider {
                 .httpOnly(true) // XSS 공격 방지
                 .secure(false) // HTTPS 적용 프로젝트 x
                 .maxAge(7 * 24 * 60 * 60) // 1주일 (refreshToken과 동일)
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    /**
+     * 로그아웃, 0초짜리 refreshToken Cookie 전송
+     */
+    public void createExpiredCookie(HttpServletResponse response) {
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .path("/") // 모든 곳에서 사용 허용
+                .sameSite("Strict") // CSRF 공격 방지
+                .httpOnly(true) // XSS 공격 방지
+                .secure(false) // HTTPS 적용 프로젝트 x
+                .maxAge(0) // 클라이언트 Cookie 파기
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());

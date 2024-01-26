@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @DeleteMapping("/auth/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request,
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug(("로그아웃 요청 - DELETE, Controller"));
 
@@ -75,6 +75,8 @@ public class UserController {
         }
 
         userService.deleteRefreshToken(refreshTokenValue, myUserDetails.getUser().getId());
+        // Set-Cookie: RefreshToken
+        myJwtProvider.createExpiredCookie(response);
 
         return ResponseEntity.ok().body(new ResponseDTO<>());
     }
