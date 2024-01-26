@@ -1,7 +1,6 @@
 package com.example.demo.module.user;
 
 import com.example.demo.exception.statuscode.Exception400;
-import com.example.demo.exception.statuscode.Exception401;
 import com.example.demo.exception.statuscode.Exception500;
 import com.example.demo.module.refreshtoken.RefreshToken;
 import com.example.demo.module.refreshtoken.RefreshTokenRepository;
@@ -11,7 +10,6 @@ import com.example.demo.module.user.out_dto.Login_OutDTO;
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +23,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private final StringRedisTemplate stringRedisTemplate;
     private final BCryptPasswordEncoder passwordEncoder;
     private final MyJwtProvider myJwtProvider;
 
@@ -83,7 +80,7 @@ public class UserService {
         Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByRefreshToken(refreshToken);
 
         if (refreshTokenOpt.isEmpty() || !refreshTokenOpt.get().getUserId().equals(principalUserId)) {
-            throw new Exception401("잘못된 접근입니다.");
+            throw new Exception400("잘못된 접근입니다. (재로그인 필요)");
         }
 
         // 리프레시 토큰 삭제

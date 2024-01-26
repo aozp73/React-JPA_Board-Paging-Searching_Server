@@ -51,17 +51,6 @@ public class RequestRefreshTokenIntegrationTest {
 
         // rollBack_AutoIncrement
         em.createNativeQuery("ALTER TABLE user_tb ALTER COLUMN ID RESTART WITH 1").executeUpdate();
-
-        /**
-         * [초기 데이터 및 Save]
-         * - User Entity 1건
-         * - RefreshToken Entity 1건
-         */
-        DummyEntityHelper.setUpUser(em, "user1@naver.com", "user1", "abc1", UserRole.COMMON);
-        setUp_refreshToken(1L, "mockToken");
-
-        em.flush();
-        em.clear();
     }
 
     @BeforeAll
@@ -107,7 +96,7 @@ public class RequestRefreshTokenIntegrationTest {
     }
 
     @Test
-    @DisplayName("RefreshToken 요청 실패 - 잘못된 토큰 전송")
+    @DisplayName("RefreshToken 요청 실패 - 잘못된 refreshToken 전송")
     public void requestRefresh_RefreshTokenValid_FailTest() throws Exception {
         // given
         Cookie cookie = new Cookie("refreshToken", "wrong");

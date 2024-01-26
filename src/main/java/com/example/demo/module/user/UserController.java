@@ -3,6 +3,7 @@ package com.example.demo.module.user;
 import com.example.demo.config.security.jwt.MyJwtProvider;
 import com.example.demo.config.security.principal.MyUserDetails;
 import com.example.demo.exception.ResponseDTO;
+import com.example.demo.exception.statuscode.Exception400;
 import com.example.demo.module.refreshtoken.in_dto.RefreshToken_inDTO;
 import com.example.demo.module.user.in_dto.Join_InDTO;
 import com.example.demo.module.user.in_dto.Login_InDTO;
@@ -58,10 +59,22 @@ public class UserController {
     }
 
     @DeleteMapping("/auth/logout")
-    public ResponseEntity<?> logout(@RequestBody @Valid RefreshToken_inDTO refreshTokenInDTO,
+    public ResponseEntity<?> logout(HttpServletRequest request,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug(("로그아웃 요청 - DELETE, Controller"));
-        userService.deleteRefreshToken(refreshTokenInDTO.getRefreshToken(), myUserDetails.getUser().getId());
+
+        // refreshToken 추출 및 값 확인
+        String refreshTokenValue = myJwtProvider.getRefreshTokenByCookie(request);
+        if (refreshTokenValue == null) {
+            throw new Exception400("RefreshToken이 전송되지 않았습니다. (재로그인 필요)");
+        }
+
+        // refreshToken 만료 확인
+        if (myJwtProvider.isRefreshTokenExpired(refreshTokenValue)) {
+            throw new Exception400("RefreshToken 오류 (만료, 잘못된 형식 등, 재로그인 필요)");
+        }
+
+        userService.deleteRefreshToken(refreshTokenValue, myUserDetails.getUser().getId());
 
         return ResponseEntity.ok().body(new ResponseDTO<>());
     }
