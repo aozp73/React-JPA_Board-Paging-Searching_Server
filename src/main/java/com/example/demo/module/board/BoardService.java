@@ -117,7 +117,7 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardDetail_OutDTO update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
+    public void update(BoardUpdate_InDTO boardUpdateInDTO, Long userId) {
         log.debug("게시글 수정 - PUT, Service");
 
         Board boardEntity = boardRepository.findById(boardUpdateInDTO.getId())
@@ -132,9 +132,6 @@ public class BoardService {
 
         // 요청값 DB 반영
         boardUpdateInDTO.toEntity(boardEntity);
-
-        // 저장 데이터 반환
-        return getBoardDetailOutDTO(boardEntity, userId);
     }
 
     @Transactional

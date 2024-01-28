@@ -28,7 +28,7 @@ public class BoardController {
 
     @GetMapping("/board")
     public ResponseEntity<?> list(@ModelAttribute BoardListSearch_InDTO boardListSearchInDTO,
-                       @PageableDefault(size = 5) Pageable pageable) {
+                                  @PageableDefault(size = 5) Pageable pageable) {
         log.debug("게시글 목록 - GET, Controller");
         int page = pageable.getPageNumber() - 1; // Client 편의: 첫 페이지 = 1
         Pageable adjustedPageable = PageRequest.of(Math.max(page, 0), pageable.getPageSize(), pageable.getSort());
@@ -48,7 +48,7 @@ public class BoardController {
 
     @PostMapping("/auth/board")
     public ResponseEntity<?> save(@RequestBody @Valid BoardSave_InDTO boardSaveInDTO,
-                       @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                  @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 등록 - POST, Controller");
 
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.save(boardSaveInDTO, myUserDetails.getUser().getId())));
@@ -56,7 +56,7 @@ public class BoardController {
 
     @GetMapping("/auth/board/{boardId}")
     public ResponseEntity<?> updateForm(@PathVariable Long boardId,
-                             @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                        @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 수정 페이지 - GET, Controller");
 
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.updateForm(boardId, myUserDetails.getUser().getId())));
@@ -66,13 +66,14 @@ public class BoardController {
     public ResponseEntity<?> update(@RequestBody @Valid BoardUpdate_InDTO boardUpdateInDTO,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 수정 - PUT, Controller");
+        boardService.update(boardUpdateInDTO, myUserDetails.getUser().getId());
 
-        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.update(boardUpdateInDTO, myUserDetails.getUser().getId())));
+        return ResponseEntity.ok().body(new ResponseDTO<>());
     }
 
     @DeleteMapping("/auth/board/{boardId}")
     public ResponseEntity<?> delete(@PathVariable Long boardId,
-                                  @AuthenticationPrincipal MyUserDetails myUserDetails) {
+                                    @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 삭제 - DELETE, Controller");
         boardService.delete(boardId, myUserDetails.getUser().getId());
 
