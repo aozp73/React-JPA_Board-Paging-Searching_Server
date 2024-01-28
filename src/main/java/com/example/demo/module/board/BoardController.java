@@ -8,6 +8,7 @@ import com.example.demo.module.board.in_dto.BoardUpdate_InDTO;
 import com.example.demo.module.board.out_dto.BoardDetail_OutDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,10 @@ public class BoardController {
     public ResponseEntity<?> list(@ModelAttribute BoardListSearch_InDTO boardListSearchInDTO,
                        @PageableDefault(size = 5) Pageable pageable) {
         log.debug("게시글 목록 - GET, Controller");
+        int page = pageable.getPageNumber() - 1; // Client 편의: 첫 페이지 = 1
+        Pageable adjustedPageable = PageRequest.of(Math.max(page, 0), pageable.getPageSize(), pageable.getSort());
 
-        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findAll(boardListSearchInDTO, pageable)));
+        return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findAll(boardListSearchInDTO, adjustedPageable)));
     }
 
     @GetMapping("/board/{boardId}")

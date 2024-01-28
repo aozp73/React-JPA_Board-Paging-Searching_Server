@@ -67,7 +67,12 @@ public class UserService {
         String refreshToken = myJwtProvider.createRefreshToken(userEntity);
 
         // Redis 저장 - refresh 토큰
-        refreshTokenRepository.save(new RefreshToken(userEntity.getId(), refreshToken));
+        try {
+            refreshTokenRepository.save(new RefreshToken(userEntity.getId(), refreshToken));
+        } catch (Exception e) {
+            log.debug("로그인 - Redis 연결 오류");
+            throw new Exception500("일시적인 서버에러 발생");
+        }
 
         // DTO 응답
         return Login_OutDTO.fromTokensAndUserEntity(accessToken, refreshToken, userEntity);
