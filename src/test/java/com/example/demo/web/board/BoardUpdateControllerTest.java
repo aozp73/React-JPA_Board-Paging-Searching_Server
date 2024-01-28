@@ -112,6 +112,6 @@ public class BoardUpdateControllerTest {
                 .username("user1")
                 .build();
 
-        return new BoardDetail_OutDTO(boardDetailFlatDTO);
+        return new BoardDetail_OutDTO(boardDetailFlatDTO, 1L);
     }
 }

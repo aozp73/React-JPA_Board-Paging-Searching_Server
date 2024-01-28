@@ -99,7 +99,7 @@ public class BoardService {
         }
 
         // 저장 데이터 반환
-        return getBoardDetailOutDTO(board);
+        return getBoardDetailOutDTO(board, userId);
     }
 
 
@@ -134,7 +134,7 @@ public class BoardService {
         boardUpdateInDTO.toEntity(boardEntity);
 
         // 저장 데이터 반환
-        return getBoardDetailOutDTO(boardEntity);
+        return getBoardDetailOutDTO(boardEntity, userId);
     }
 
     @Transactional
@@ -159,7 +159,7 @@ public class BoardService {
      * 호출: 게시글 등록, 수정
      * 기능: Client가 렌더링 할 DB 데이터 반환
      */
-    private BoardDetail_OutDTO getBoardDetailOutDTO(Board boardEntity) {
+    private BoardDetail_OutDTO getBoardDetailOutDTO(Board boardEntity, Long userId) {
         BoardDetailFlatDTO boardDetailDTO = new BoardDetailFlatDTO();
 
         try {
@@ -168,6 +168,6 @@ public class BoardService {
             throw new Exception500("게시글 상세 조회에 실패하였습니다.");
         }
 
-        return new BoardDetail_OutDTO(boardDetailDTO);
+        return new BoardDetail_OutDTO(boardDetailDTO, userId);
     }
 }

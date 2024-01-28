@@ -15,6 +15,7 @@ public class BoardDetailDTO {
     private String content;
     private Integer views;
     private String createdAt;
+    private Boolean editable;
     private Long commentCount;
 
     private User user = new User();
@@ -36,6 +37,23 @@ public class BoardDetailDTO {
 
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
         this.createdAt = boardDetailFlatDTO.getCreatedAt().format(dateFormat);
+
+        this.editable = false;
+
+        this.commentCount = boardDetailFlatDTO.getCommentCount();
+        this.user.userId = boardDetailFlatDTO.getUserId();
+        this.user.username = boardDetailFlatDTO.getUsername();
+    }
+    public BoardDetailDTO(BoardDetailFlatDTO boardDetailFlatDTO, Long userId) {
+        this.boardId = boardDetailFlatDTO.getBoardId();
+        this.title = boardDetailFlatDTO.getTitle();
+        this.content = boardDetailFlatDTO.getContent();
+        this.views = boardDetailFlatDTO.getViews();
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss");
+        this.createdAt = boardDetailFlatDTO.getCreatedAt().format(dateFormat);
+
+        this.editable = boardDetailFlatDTO.getUserId().equals(userId);
 
         this.commentCount = boardDetailFlatDTO.getCommentCount();
         this.user.userId = boardDetailFlatDTO.getUserId();

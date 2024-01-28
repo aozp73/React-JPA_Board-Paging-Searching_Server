@@ -26,13 +26,13 @@ public class BoardDetail_OutDTO {
     }
 
     public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO, List<CommentListFlatDTO> commentListFlatDTOS, Long userId) {
-        this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO);
+        this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO, userId);
         this.commentListDTOS = commentListFlatDTOS.stream()
                 .map(commentListFlatDTO -> new CommentList_OutDTO(commentListFlatDTO, userId))
                 .collect(Collectors.toList());
     }
 
-    public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO) {
-        this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO);
+    public BoardDetail_OutDTO(BoardDetailFlatDTO boardDetailFlatDTO , Long userId) {
+        this.boardDetailDTO = new BoardDetailDTO(boardDetailFlatDTO, userId);
     }
 }
