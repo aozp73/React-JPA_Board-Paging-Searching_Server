@@ -15,4 +15,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE c.board.id = :boardId " +
             "ORDER BY c.id")
     List<CommentListFlatDTO> findAllWithCommentForDetail(@Param("boardId") Long boardId);
+
+    List<Comment> findByBoardId(Long boardId);
 }
