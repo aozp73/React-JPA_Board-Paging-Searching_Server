@@ -49,7 +49,7 @@ public class BoardDetailControllerTest {
         when(boardService.findDetailById(anyLong(), isNull())).thenReturn(make_BoardDetail_OutDTO());
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/board/" + boardId)
+        ResultActions resultActions = mockMvc.perform(get("/api/authOptional/board/" + boardId)
                 .accept(MediaType.APPLICATION_JSON));
 
         // then

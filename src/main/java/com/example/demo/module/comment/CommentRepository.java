@@ -12,6 +12,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT new com.example.demo.module.comment.out_dto.CommentListFlatDTO(c.id, c.user.id, c.user.username, c.content, " +
             "c.createdAt) " +
             "FROM Comment c " +
-            "WHERE c.board.id = :boardId")
+            "WHERE c.board.id = :boardId " +
+            "ORDER BY c.id")
     List<CommentListFlatDTO> findAllWithCommentForDetail(@Param("boardId") Long boardId);
 }

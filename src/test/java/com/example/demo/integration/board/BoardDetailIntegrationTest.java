@@ -66,7 +66,7 @@ public class BoardDetailIntegrationTest extends AbstractIntegrationTest {
         Long boardId = 1L;
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/board/" + boardId)
+        ResultActions resultActions = mockMvc.perform(get("/api/authOptional/board/" + boardId)
                 .accept(MediaType.APPLICATION_JSON));
 
         // then
@@ -108,7 +108,7 @@ public class BoardDetailIntegrationTest extends AbstractIntegrationTest {
         Long boardId = 2L;
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/board/" + boardId)
+        ResultActions resultActions = mockMvc.perform(get("/api/authOptional/board/" + boardId)
                 .accept(MediaType.APPLICATION_JSON));
 
         // then

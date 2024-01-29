@@ -61,8 +61,6 @@ public class BoardUpdateControllerTest {
         BoardUpdate_InDTO boardUpdateInDTO = make_BoardUpdate_InDTO();
         String content = new ObjectMapper().writeValueAsString(boardUpdateInDTO);
 
-        when(boardService.update(any(BoardUpdate_InDTO.class), eq(userId))).thenReturn(make_BoardDetail_OutDTO());
-
         // when
         ResultActions resultActions = mockMvc.perform(put("/api/auth/board")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,17 +72,6 @@ public class BoardUpdateControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.msg").value("성공"))
-
-                .andExpect(jsonPath("$.data.boardDetailDTO.boardId").value(1))
-                .andExpect(jsonPath("$.data.boardDetailDTO.title").value("수정 제목1"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.content").value("수정 내용1"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.views").value(0))
-                .andExpect(jsonPath("$.data.boardDetailDTO.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.data.boardDetailDTO.commentCount").value(0))
-                .andExpect(jsonPath("$.data.boardDetailDTO.user.userId").value(1))
-                .andExpect(jsonPath("$.data.boardDetailDTO.user.username").value("user1"))
-
-                .andExpect(jsonPath("$.data.commentListDTOS").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
 
         verify(boardService).update(any(BoardUpdate_InDTO.class), eq(userId));

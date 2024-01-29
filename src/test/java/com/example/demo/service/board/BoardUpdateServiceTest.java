@@ -49,18 +49,9 @@ public class BoardUpdateServiceTest {
         when(boardRepository.findBoardDetailWithUserForDetail(any(Long.class))).thenReturn(make_BoardDetailFlatDTO());
 
         // when
-        BoardDetail_OutDTO result = boardService.update(boardUpdateInDTO, 1L);
+        boardService.update(boardUpdateInDTO, 1L);
 
         // then
-        assertNotNull(result);
-        assertEquals(1, result.getBoardDetailDTO().getBoardId());
-        assertEquals("수정 제목1", result.getBoardDetailDTO().getTitle());
-        assertEquals("수정 내용1", result.getBoardDetailDTO().getContent());
-        assertEquals(10, result.getBoardDetailDTO().getViews());
-        assertEquals(0, result.getBoardDetailDTO().getCommentCount());
-        assertEquals(1, result.getBoardDetailDTO().getUser().getUserId());
-        assertEquals("user1", result.getBoardDetailDTO().getUser().getUsername());
-
         verify(userRepository).findById(any(Long.class));
         verify(boardRepository).findById(any(Long.class));
         verify(boardRepository).findBoardDetailWithUserForDetail(any(Long.class));

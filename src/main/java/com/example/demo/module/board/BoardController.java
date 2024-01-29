@@ -36,7 +36,7 @@ public class BoardController {
         return ResponseEntity.ok().body(new ResponseDTO<>().data(boardService.findAll(boardListSearchInDTO, adjustedPageable)));
     }
 
-    @GetMapping("/board/{boardId}")
+    @GetMapping("/authOptional/board/{boardId}")
     public ResponseEntity<?> detail(@PathVariable Long boardId,
                                     @AuthenticationPrincipal MyUserDetails myUserDetails) {
         log.debug("게시글 상세 - GET, Controller");

@@ -84,17 +84,6 @@ public class BoardUpdateIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.msg").value("성공"))
-
-                .andExpect(jsonPath("$.data.boardDetailDTO.boardId").value(1))
-                .andExpect(jsonPath("$.data.boardDetailDTO.title").value("수정 제목1"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.content").value("수정 내용1"))
-                .andExpect(jsonPath("$.data.boardDetailDTO.views").value(10))
-                .andExpect(jsonPath("$.data.boardDetailDTO.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.data.boardDetailDTO.commentCount").value(0))
-                .andExpect(jsonPath("$.data.boardDetailDTO.user.userId").value(1))
-                .andExpect(jsonPath("$.data.boardDetailDTO.user.username").value("user1"))
-
-                .andExpect(jsonPath("$.data.commentListDTOS").isEmpty())
                 .andDo(MockMvcResultHandlers.print());
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
